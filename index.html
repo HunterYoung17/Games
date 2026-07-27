@@ -357,7 +357,7 @@
             { type: 'Division', value: 'American', label: 'American Div' },
             { type: 'Division', value: 'International', label: 'Intl Div' },
             
-            // Expanded Pool to distinguish between Orgs and specific Teams
+            // Orgs and Main Teams
             { type: 'Org', value: 'Shockwave', label: 'Shockwave (Org)' },
             { type: 'Team', value: 'Shockwave', label: 'Shockwave (Team)' },
             { type: 'Org', value: 'Blasters', label: 'Blasters (Org)' },
@@ -370,7 +370,6 @@
             { type: 'Team', value: 'Howlers', label: 'Howlers (Team)' },
             { type: 'Org', value: 'Moose', label: 'Moose (Org)' },
             { type: 'Team', value: 'Moose', label: 'Moose (Team)' },
-            
             { type: 'Org', value: 'Ninjas', label: 'Ninjas (Org)' },
             { type: 'Team', value: 'Ninjas', label: 'Ninjas (Team)' },
             { type: 'Org', value: 'Samurai', label: 'Samurai (Org)' },
@@ -384,6 +383,49 @@
             { type: 'Org', value: 'Zebras', label: 'Zebras (Org)' },
             { type: 'Team', value: 'Zebras', label: 'Zebras (Team)' },
 
+            // Affiliated Teams (CPL, CAS, CNL)
+            { type: 'Team', value: 'Sonic Boom', label: 'Sonic Boom (Team)' },
+            { type: 'Team', value: 'Surge', label: 'Surge (Team)' },
+            { type: 'Team', value: 'Sound', label: 'Sound (Team)' },
+            { type: 'Team', value: 'Mortars', label: 'Mortars (Team)' },
+            { type: 'Team', value: 'Cannons', label: 'Cannons (Team)' },
+            { type: 'Team', value: 'Ballistics', label: 'Ballistics (Team)' },
+            { type: 'Team', value: 'Supernova', label: 'Supernova (Team)' },
+            { type: 'Team', value: 'Astronauts', label: 'Astronauts (Team)' },
+            { type: 'Team', value: 'Rovers', label: 'Rovers (Team)' },
+            { type: 'Team', value: 'Marauders', label: 'Marauders (Team)' },
+            { type: 'Team', value: 'Conquerors', label: 'Conquerors (Team)' },
+            { type: 'Team', value: 'Shipwreck', label: 'Shipwreck (Team)' },
+            { type: 'Team', value: 'Coyotes', label: 'Coyotes (Team)' },
+            { type: 'Team', value: 'Wolfpack', label: 'Wolfpack (Team)' },
+            { type: 'Team', value: 'Timberwolves', label: 'Timberwolves (Team)' },
+            { type: 'Team', value: 'Groundhogs', label: 'Groundhogs (Team)' },
+            { type: 'Team', value: 'Black Bears', label: 'Black Bears (Team)' },
+            { type: 'Team', value: 'Ducks', label: 'Ducks (Team)' },
+            { type: 'Team', value: 'Shadows', label: 'Shadows (Team)' },
+            { type: 'Team', value: 'Prowlers', label: 'Prowlers (Team)' },
+            { type: 'Team', value: 'Thieves', label: 'Thieves (Team)' },
+            { type: 'Team', value: 'Warriors', label: 'Warriors (Team)' },
+            { type: 'Team', value: 'Shaman', label: 'Shaman (Team)' },
+            { type: 'Team', value: 'Bushido', label: 'Bushido (Team)' },
+            { type: 'Team', value: 'Lory', label: 'Lory (Team)' },
+            { type: 'Team', value: 'Skyhawks', label: 'Skyhawks (Team)' },
+            { type: 'Team', value: 'Redwings', label: 'Redwings (Team)' },
+            { type: 'Team', value: 'Fishermen', label: 'Fishermen (Team)' },
+            { type: 'Team', value: 'Behemoths', label: 'Behemoths (Team)' },
+            { type: 'Team', value: 'Leviathans', label: 'Leviathans (Team)' },
+            { type: 'Team', value: 'Cobras', label: 'Cobras (Team)' },
+            { type: 'Team', value: 'Copperheads', label: 'Copperheads (Team)' },
+            { type: 'Team', value: 'Anacondas', label: 'Anacondas (Team)' },
+            { type: 'Team', value: 'Buffalo', label: 'Buffalo (Team)' },
+            { type: 'Team', value: 'Elephants', label: 'Elephants (Team)' },
+            { type: 'Team', value: 'Rhinos', label: 'Rhinos (Team)' },
+            { type: 'Team', value: 'Buccanukes', label: 'Buccanukes (Team)' },
+            { type: 'Team', value: 'Shooting Stars', label: 'Shooting Stars (Team)' },
+            { type: 'Team', value: 'Flying Samurai', label: 'Flying Samurai (Team)' },
+            { type: 'Team', value: 'Fishnobis', label: 'Fishnobis (Team)' },
+
+            // Stats & Seasons
             { type: 'Stat', stat: 'Goals', threshold: 50, label: '50+ Goals' },
             { type: 'Stat', stat: 'MVPR', threshold: 2.0, label: '2.0+ MVPR' },
             { type: 'Stat', stat: 'Saves', threshold: 100, label: '100+ Saves' },
@@ -448,7 +490,7 @@
             "Skyhawks": { org: "Flyers", league: "CAS", div: "International" },
             "Redwings": { org: "Flyers", league: "CNL", div: "International" },
             // International - Anglers
-            "Anglers": { org: "Anglers", league: "CCS", div: "International" },
+            "Atlantis Anglers": { org: "Anglers", league: "CCS", div: "International" },
             "Fishermen": { org: "Anglers", league: "CPL", div: "International" },
             "Behemoths": { org: "Anglers", league: "CAS", div: "International" },
             "Leviathans": { org: "Anglers", league: "CNL", div: "International" },
@@ -647,7 +689,8 @@
             
             logDebug("Generating a 100% uniquely solvable grid...", "log-info");
 
-            while (!valid && attempts < 500) {
+            // Increased attempt limit to 2000 to accommodate the expanded and more specific team pool
+            while (!valid && attempts < 2000) {
                 attempts++;
                 let shuffledCats = [...CATEGORY_POOL].sort(() => 0.5 - Math.random());
                 columns = [shuffledCats[0], shuffledCats[1], shuffledCats[2]];
@@ -678,7 +721,7 @@
             if (valid) {
                 logDebug(`Solvable grid generated in ${attempts} attempts!`, "log-header");
             } else {
-                logDebug(`WARNING: Could not find a uniquely solvable grid after 500 attempts.`, "log-fail");
+                logDebug(`WARNING: Could not find a uniquely solvable grid after 2000 attempts. Check sheet data.`, "log-fail");
             }
         }
 
