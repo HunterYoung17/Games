@@ -377,8 +377,8 @@
             { type: 'Team', value: 'Samurai', label: 'Samurai (Team)' },
             { type: 'Org', value: 'Flyers', label: 'Flyers (Org)' },
             { type: 'Team', value: 'Flyers', label: 'Flyers (Team)' },
-            { type: 'Org', value: 'Atlantis Anglers', label: 'Atlantis Anglers (Org)' },
-            { type: 'Team', value: 'Atlantis Anglers', label: 'Atlantis Anglers (Team)' },
+            { type: 'Org', value: 'Anglers', label: 'Anglers (Org)' },
+            { type: 'Team', value: 'Anglers', label: 'Anglers (Team)' },
             { type: 'Org', value: 'Vipers', label: 'Vipers (Org)' },
             { type: 'Team', value: 'Vipers', label: 'Vipers (Team)' },
             { type: 'Org', value: 'Zebras', label: 'Zebras (Org)' },
@@ -447,11 +447,11 @@
             "Lory": { org: "Flyers", league: "CPL", div: "International" },
             "Skyhawks": { org: "Flyers", league: "CAS", div: "International" },
             "Redwings": { org: "Flyers", league: "CNL", div: "International" },
-            // International - Atlantis Anglers
-            "Atlantis Anglers": { org: "Atlantis Anglers", league: "CCS", div: "International" },
-            "Fishermen": { org: "Atlantis Anglers", league: "CPL", div: "International" },
-            "Behemoths": { org: "Atlantis Anglers", league: "CAS", div: "International" },
-            "Leviathans": { org: "Atlantis Anglers", league: "CNL", div: "International" },
+            // International - Anglers
+            "Anglers": { org: "Anglers", league: "CCS", div: "International" },
+            "Fishermen": { org: "Anglers", league: "CPL", div: "International" },
+            "Behemoths": { org: "Anglers", league: "CAS", div: "International" },
+            "Leviathans": { org: "Anglers", league: "CNL", div: "International" },
             // International - Vipers
             "Vipers": { org: "Vipers", league: "CCS", div: "International" },
             "Cobras": { org: "Vipers", league: "CPL", div: "International" },
@@ -465,7 +465,7 @@
 
             // International - Rebranded/Joint Teams
             "Flying Samurai": { org: ["Samurai", "Flyers"], league: "CPL", div: "International" },
-            "Fishnobis": { org: ["Ninjas", "Atlantis Anglers"], league: "CPL", div: "International" }
+            "Fishnobis": { org: ["Ninjas", "Anglers"], league: "CPL", div: "International" }
         };
 
         // ==========================================
@@ -815,7 +815,6 @@
                 `;
                 activeCellElement.classList.add('correct');
                 
-                // Win Condition Check
                 if (usedPlayers.length === 9) {
                     logDebug(`GAME WON! All 9 squares filled successfully.`, "log-pass");
                     setTimeout(() => {
