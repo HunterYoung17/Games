@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RL League Grid</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --grid-bg: #ffffff;
+            --cell-bg: #ffffff;
+            --cell-hover: #f1f3f5;
+            --text-color: #333333;
+            --correct: #28a745;
+            --wrong: #dc3545;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            margin: 0;
+        }
+
+        h1 { margin-bottom: 0.5rem; }
+        .guesses-left { font-size: 1.2rem; margin-bottom: 1.5rem; font-weight: bold; }
+
+        /* Grid Layout */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 120px 150px 150px 150px;
+            grid-template-rows: 100px 150px 150px 150px;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .header-cell {
+            background-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+        }
+
+        .empty-cell { background-color: transparent; }
+
+        .game-cell {
+            background-color: var(--cell-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden; 
+        }
+
+        .game-cell:hover:not(.correct) { background-color: var(--cell-hover); }
+        
+        .game-cell.correct { 
+            background-color: var(--correct); 
+            cursor: default; 
+            padding: 0; 
+            box-shadow: none;
+        }
+
+        .player-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            display: block;
+        }
+
+        .player-name-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            font-size: 0.85rem;
+            padding: 4px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Debug Console Panel */
+        .debug-panel {
+            width: 580px;
+            max-width: 90vw;
+            background: #1e1e1e;
+            color: #00ff66;
+            font-family: 'Consolas', 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            margin-top: 10px;
+        }
+
+        .debug-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .clear-btn {
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .clear-btn:hover { background: #666; }
+
+        #debug-log {
+            height: 180px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .log-entry { margin: 0; word-break: break-word; }
+        .log-info { color: #888888; }
+        .log-pass { color: #28a745; font-weight: bold; }
+        .log-fail { color: #ff4d4d; font-weight: bold; }
+        .log-header { color: #00bcff; font-weight: bold; }
+
+        /* Modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 15vh;
+            z-index: 1000;
+        }
+
+        .search-container {
+            background: #ffffff;
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90vw;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            overflow: hidden;
+            color: #333;
+        }
+        
+        .win-container {
+            background: #ffffff;
+            border-radius: 12px;
+            width: 400px;
+            max-width: 90vw;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            text-align: center;
+            padding: 2.5rem;
+            color: #333;
+            margin-top: 10vh;
+        }
+
+        .win-container h2 {
+            color: var(--correct);
+            margin-top: 0;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .win-container p {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            color: #555;
+        }
+
+        .search-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .search-icon {
+            color: #999;
+            font-size: 1.2rem;
+            margin-right: 12px;
+            opacity: 0.7;
+        }
+
+        #player-search {
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        
+        #player-search::placeholder {
+            color: #999;
+        }
+
+        #custom-search-results {
+            max-height: 350px;
+            overflow-y: auto;
+            background: #ffffff;
+        }
+
+        .search-result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.15s;
+        }
+
+        .search-result-item:hover {
+            background: #f8f9fa;
+        }
+
+        .player-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .player-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #111;
+        }
+
+        .player-subtext {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .select-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .select-btn:hover {
+            background: #218838;
+        }
+        
+        .play-again-btn {
+            padding: 12px 24px;
+            font-size: 1.1rem;
+        }
+
+        .close-instruction {
+            text-align: center;
+            padding: 8px;
+            font-size: 0.8rem;
+            color: #999;
+            background: #fdfdfd;
+            border-top: 1px solid #e0e0e0;
+            cursor: pointer;
+        }
+        
+        .close-instruction:hover { background: #f5f5f5; }
+    </style>
+</head>
+<body>
+
+    <h1>RL League Grid</h1>
+    <div class="guesses-left">Total Guesses: <span id="guess-count">0</span></div>
+
+    <div class="grid-container" id="grid">
+        <!-- Will be populated by JavaScript -->
+    </div>
+
+    <!-- Live Debug Log Display -->
+    <div class="debug-panel">
+        <div class="debug-header">
+            <span>LIVE GAME LOG & DIAGNOSTICS</span>
+            <button class="clear-btn" onclick="clearDebugLog()">Clear</button>
+        </div>
+        <div id="debug-log">
+            <div class="log-entry log-info">> Initializing system...</div>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="search-container">
+            <div class="search-header">
+                <span class="search-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </span>
+                <input type="text" id="player-search" placeholder="Search..." autocomplete="off">
+            </div>
+            <div id="custom-search-results">
+                <!-- Javascript will inject list items here -->
+            </div>
+            <div class="close-instruction" onclick="closeModal()">
+                Click here or outside to close
+            </div>
+        </div>
+    </div>
+    
+    <!-- Win Game Modal -->
+    <div class="modal-overlay" id="win-modal" style="align-items: center; padding-top: 0;">
+        <div class="win-container">
+            <h2>Grid Complete!</h2>
+            <p>You filled all 9 squares in <strong id="final-guess-count">0</strong> guesses.</p>
+            <button class="select-btn play-again-btn" onclick="resetGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURATION
+        // ==========================================
+        
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRUbG9vu9G8qILH_kc3y5sWsBKb7XtqAnpcYbzO95IFjtf4tYLX4Ypl4_Xs0kZo4RGy1dKgKCGM2np2/pub?output=csv'; 
+
+        const CATEGORY_POOL = [
+            { type: 'League', value: 'CCS', label: 'Played in CCS' },
+            { type: 'League', value: 'CPL', label: 'Played in CPL' },
+            { type: 'League', value: 'CAS', label: 'Played in CAS' },
+            { type: 'League', value: 'CNL', label: 'Played in CNL' },
+            { type: 'Division', value: 'American', label: 'American Div' },
+            { type: 'Division', value: 'International', label: 'Intl Div' },
+            
+            // Orgs and Main Teams
+            { type: 'Org', value: 'Shockwave', label: 'Shockwave (Org)' },
+            { type: 'Team', value: 'Shockwave', label: 'Shockwave (Team)' },
+            { type: 'Org', value: 'Blasters', label: 'Blasters (Org)' },
+            { type: 'Team', value: 'Blasters', label: 'Blasters (Team)' },
+            { type: 'Org', value: 'Stars', label: 'Stars (Org)' },
+            { type: 'Team', value: 'Stars', label: 'Stars (Team)' },
+            { type: 'Org', value: 'Pirates', label: 'Pirates (Org)' },
+            { type: 'Team', value: 'Pirates', label: 'Pirates (Team)' },
+            { type: 'Org', value: 'Howlers', label: 'Howlers (Org)' },
+            { type: 'Team', value: 'Howlers', label: 'Howlers (Team)' },
+            { type: 'Org', value: 'Moose', label: 'Moose (Org)' },
+            { type: 'Team', value: 'Moose', label: 'Moose (Team)' },
+            { type: 'Org', value: 'Ninjas', label: 'Ninjas (Org)' },
+            { type: 'Team', value: 'Ninjas', label: 'Ninjas (Team)' },
+            { type: 'Org', value: 'Samurai', label: 'Samurai (Org)' },
+            { type: 'Team', value: 'Samurai', label: 'Samurai (Team)' },
+            { type: 'Org', value: 'Flyers', label: 'Flyers (Org)' },
+            { type: 'Team', value: 'Flyers', label: 'Flyers (Team)' },
+            { type: 'Org', value: 'Anglers', label: 'Anglers (Org)' },
+            { type: 'Team', value: 'Anglers', label: 'Anglers (Team)' },
+            { type: 'Org', value: 'Vipers', label: 'Vipers (Org)' },
+            { type: 'Team', value: 'Vipers', label: 'Vipers (Team)' },
+            { type: 'Org', value: 'Zebras', label: 'Zebras (Org)' },
+            { type: 'Team', value: 'Zebras', label: 'Zebras (Team)' },
+
+            // Affiliated Teams (CPL, CAS, CNL)
+            { type: 'Team', value: 'Sonic Boom', label: 'Sonic Boom (Team)' },
+            { type: 'Team', value: 'Surge', label: 'Surge (Team)' },
+            { type: 'Team', value: 'Sound', label: 'Sound (Team)' },
+            { type: 'Team', value: 'Mortars', label: 'Mortars (Team)' },
+            { type: 'Team', value: 'Cannons', label: 'Cannons (Team)' },
+            { type: 'Team', value: 'Ballistics', label: 'Ballistics (Team)' },
+            { type: 'Team', value: 'Supernova', label: 'Supernova (Team)' },
+            { type: 'Team', value: 'Astronauts', label: 'Astronauts (Team)' },
+            { type: 'Team', value: 'Rovers', label: 'Rovers (Team)' },
+            { type: 'Team', value: 'Marauders', label: 'Marauders (Team)' },
+            { type: 'Team', value: 'Conquerors', label: 'Conquerors (Team)' },
+            { type: 'Team', value: 'Shipwreck', label: 'Shipwreck (Team)' },
+            { type: 'Team', value: 'Coyotes', label: 'Coyotes (Team)' },
+            { type: 'Team', value: 'Wolfpack', label: 'Wolfpack (Team)' },
+            { type: 'Team', value: 'Timberwolves', label: 'Timberwolves (Team)' },
+            { type: 'Team', value: 'Groundhogs', label: 'Groundhogs (Team)' },
+            { type: 'Team', value: 'Black Bears', label: 'Black Bears (Team)' },
+            { type: 'Team', value: 'Ducks', label: 'Ducks (Team)' },
+            { type: 'Team', value: 'Shadows', label: 'Shadows (Team)' },
+            { type: 'Team', value: 'Prowlers', label: 'Prowlers (Team)' },
+            { type: 'Team', value: 'Thieves', label: 'Thieves (Team)' },
+            { type: 'Team', value: 'Warriors', label: 'Warriors (Team)' },
+            { type: 'Team', value: 'Shaman', label: 'Shaman (Team)' },
+            { type: 'Team', value: 'Bushido', label: 'Bushido (Team)' },
+            { type: 'Team', value: 'Lory', label: 'Lory (Team)' },
+            { type: 'Team', value: 'Skyhawks', label: 'Skyhawks (Team)' },
+            { type: 'Team', value: 'Redwings', label: 'Redwings (Team)' },
+            { type: 'Team', value: 'Fishermen', label: 'Fishermen (Team)' },
+            { type: 'Team', value: 'Behemoths', label: 'Behemoths (Team)' },
+            { type: 'Team', value: 'Leviathans', label: 'Leviathans (Team)' },
+            { type: 'Team', value: 'Cobras', label: 'Cobras (Team)' },
+            { type: 'Team', value: 'Copperheads', label: 'Copperheads (Team)' },
+            { type: 'Team', value: 'Anacondas', label: 'Anacondas (Team)' },
+            { type: 'Team', value: 'Buffalo', label: 'Buffalo (Team)' },
+            { type: 'Team', value: 'Elephants', label: 'Elephants (Team)' },
+            { type: 'Team', value: 'Rhinos', label: 'Rhinos (Team)' },
+            { type: 'Team', value: 'Buccanukes', label: 'Buccanukes (Team)' },
+            { type: 'Team', value: 'Shooting Stars', label: 'Shooting Stars (Team)' },
+            { type: 'Team', value: 'Flying Samurai', label: 'Flying Samurai (Team)' },
+            { type: 'Team', value: 'Fishnobis', label: 'Fishnobis (Team)' },
+
+            // Stats & Seasons
+            { type: 'Stat', stat: 'Goals', threshold: 50, label: '50+ Goals' },
+            { type: 'Stat', stat: 'MVPR', threshold: 2.0, label: '2.0+ MVPR' },
+            { type: 'Stat', stat: 'Saves', threshold: 100, label: '100+ Saves' },
+            
+            { type: 'Season', value: 'S1', label: 'Played in S1' },
+            { type: 'Season', value: 'S2', label: 'Played in S2' },
+            { type: 'Season', value: 'S3', label: 'Played in S3' },
+            { type: 'Season', value: 'S4', label: 'Played in S4' },
+            { type: 'Season', value: 'S5', label: 'Played in S5' }
+        ];
+
+        // The Master Team Translator
+        const TEAM_TRANSLATOR = {
+            // American - Shockwave
+            "Shockwave": { org: "Shockwave", league: "CCS", div: "American" },
+            "Sonic Boom": { org: "Shockwave", league: "CPL", div: "American" },
+            "Surge": { org: "Shockwave", league: "CAS", div: "American" },
+            "Sound": { org: "Shockwave", league: "CNL", div: "American" },
+            // American - Blasters
+            "Blasters": { org: "Blasters", league: "CCS", div: "American" },
+            "Mortars": { org: "Blasters", league: "CPL", div: "American" },
+            "Cannons": { org: "Blasters", league: "CAS", div: "American" },
+            "Ballistics": { org: "Blasters", league: "CNL", div: "American" },
+            // American - Stars
+            "Stars": { org: "Stars", league: "CCS", div: "American" },
+            "Supernova": { org: "Stars", league: "CPL", div: "American" },
+            "Astronauts": { org: "Stars", league: "CAS", div: "American" },
+            "Rovers": { org: "Stars", league: "CNL", div: "American" },
+            // American - Pirates
+            "Pirates": { org: "Pirates", league: "CCS", div: "American" },
+            "Marauders": { org: "Pirates", league: "CPL", div: "American" },
+            "Conquerors": { org: "Pirates", league: "CAS", div: "American" },
+            "Shipwreck": { org: "Pirates", league: "CNL", div: "American" },
+            // American - Howlers
+            "Howlers": { org: "Howlers", league: "CCS", div: "American" },
+            "Coyotes": { org: "Howlers", league: "CPL", div: "American" },
+            "Wolfpack": { org: "Howlers", league: "CAS", div: "American" },
+            "Timberwolves": { org: "Howlers", league: "CNL", div: "American" },
+            // American - Moose
+            "Moose": { org: "Moose", league: "CCS", div: "American" },
+            "Groundhogs": { org: "Moose", league: "CPL", div: "American" },
+            "Black Bears": { org: "Moose", league: "CAS", div: "American" },
+            "Ducks": { org: "Moose", league: "CNL", div: "American" },
+            
+            // American - Rebranded/Joint Teams
+            "Buccanukes": { org: ["Shockwave", "Pirates"], league: "CPL", div: "American" },
+            "Shooting Stars": { org: ["Stars", "Blasters"], league: "CPL", div: "American" },
+
+            // International - Ninjas
+            "Ninjas": { org: "Ninjas", league: "CCS", div: "International" },
+            "Shadows": { org: "Ninjas", league: "CPL", div: "International" },
+            "Prowlers": { org: "Ninjas", league: "CAS", div: "International" },
+            "Thieves": { org: "Ninjas", league: "CNL", div: "International" },
+            // International - Samurai
+            "Samurai": { org: "Samurai", league: "CCS", div: "International" },
+            "Warriors": { org: "Samurai", league: "CPL", div: "International" },
+            "Shaman": { org: "Samurai", league: "CAS", div: "International" },
+            "Bushido": { org: "Samurai", league: "CNL", div: "International" },
+            // International - Flyers
+            "Flyers": { org: "Flyers", league: "CCS", div: "International" },
+            "Lory": { org: "Flyers", league: "CPL", div: "International" },
+            "Skyhawks": { org: "Flyers", league: "CAS", div: "International" },
+            "Redwings": { org: "Flyers", league: "CNL", div: "International" },
+            // International - Anglers
+            "Atlantis Anglers": { org: "Anglers", league: "CCS", div: "International" },
+            "Fishermen": { org: "Anglers", league: "CPL", div: "International" },
+            "Behemoths": { org: "Anglers", league: "CAS", div: "International" },
+            "Leviathans": { org: "Anglers", league: "CNL", div: "International" },
+            // International - Vipers
+            "Vipers": { org: "Vipers", league: "CCS", div: "International" },
+            "Cobras": { org: "Vipers", league: "CPL", div: "International" },
+            "Copperheads": { org: "Vipers", league: "CAS", div: "International" },
+            "Anacondas": { org: "Vipers", league: "CNL", div: "International" },
+            // International - Zebras
+            "Zebras": { org: "Zebras", league: "CCS", div: "International" },
+            "Buffalo": { org: "Zebras", league: "CPL", div: "International" },
+            "Elephants": { org: "Zebras", league: "CAS", div: "International" },
+            "Rhinos": { org: "Zebras", league: "CNL", div: "International" },
+
+            // International - Rebranded/Joint Teams
+            "Flying Samurai": { org: ["Samurai", "Flyers"], league: "CPL", div: "International" },
+            "Fishnobis": { org: ["Ninjas", "Anglers"], league: "CPL", div: "International" }
+        };
+
+        // ==========================================
+        // 2. DEBUG LOGGING SYSTEM
+        // ==========================================
+
+        function logDebug(message, classType = 'log-info') {
+            const container = document.getElementById('debug-log');
+            const entry = document.createElement('p');
+            entry.className = `log-entry ${classType}`;
+            entry.textContent = `> ${message}`;
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function clearDebugLog() {
+            document.getElementById('debug-log').innerHTML = '';
+            logDebug("Log cleared.", "log-info");
+        }
+
+        // ==========================================
+        // 3. STATE & DATA INITIALIZATION
+        // ==========================================
+        
+        let playersData = [];
+        let columns = [];
+        let rows = [];
+        let guesses = 0;
+        let currentCell = null;
+        let usedPlayers = [];
+        let validAnswersList = [[[],[],[]], [[],[],[]], [[],[],[]]];
+
+        function parseCSV(text) {
+            const lines = text.split(/\r?\n/);
+            const rawHeaders = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            
+            const expectedHeaders = [
+                'Player', 'Org', 'League', 'Division', 
+                'Series Played', 'Games Played', 'MVPR', 
+                'Score', 'Goals', 'Assists', 'Saves', 'Demos', 'Shots', 'Seasons Played'
+            ];
+            
+            const headers = rawHeaders.map(rawHeader => {
+                const match = expectedHeaders.find(expected => expected.toLowerCase() === rawHeader.toLowerCase());
+                return match ? match : rawHeader;
+            });
+
+            logDebug(`Headers detected from Sheet: [${headers.join(', ')}]`, 'log-info');
+
+            const data = [];
+            const regex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
+
+            for(let i = 1; i < lines.length; i++) {
+                if(!lines[i].trim()) continue;
+                const values = lines[i].split(regex).map(v => v.trim().replace(/"/g, ''));
+                let rowData = {};
+                headers.forEach((header, index) => {
+                    rowData[header] = values[index];
+                });
+                data.push(rowData);
+            }
+            return data;
+        }
+
+        async function initGame() {
+            try {
+                logDebug("Fetching data from Google Sheets...", "log-info");
+                const response = await fetch(SHEET_URL);
+                const csvText = await response.text();
+                playersData = parseCSV(csvText);
+                logDebug(`Successfully loaded ${playersData.length} players from sheet!`, "log-pass");
+            } catch (e) {
+                console.error("Error loading sheet data:", e);
+                logDebug(`CRITICAL ERROR: Failed to fetch Google Sheet data. ${e.message}`, "log-fail");
+                alert("Could not load data. Check console and URL.");
+                return;
+            }
+
+            generateGridCategories();
+            buildGrid();
+        }
+        
+        function resetGame() {
+            document.getElementById('win-modal').style.display = 'none';
+            guesses = 0;
+            document.getElementById('guess-count').textContent = guesses;
+            usedPlayers = [];
+            currentCell = null;
+            clearDebugLog();
+            logDebug("Starting a new game...", "log-info");
+            
+            generateGridCategories();
+            buildGrid();
+        }
+
+        // ==========================================
+        // 4. DETAILED CONDITION EVALUATOR
+        // ==========================================
+
+        function evaluateCondition(player, category) {
+            const rawTeams = (player.Org || "").split('/').map(t => t.trim());
+            
+            if (category.type === 'Team') {
+                const match = rawTeams.map(t => t.toLowerCase()).includes(category.value.toLowerCase());
+                return { pass: match, details: `Team check [Target: "${category.value}"] -> Sheet Value: "${player.Org || ''}" (${match ? 'MATCH' : 'NO MATCH'})` };
+            }
+
+            const derivedOrgs = new Set();
+            const derivedLeagues = new Set();
+            const derivedDivs = new Set();
+
+            rawTeams.forEach(t => {
+                const teamKey = Object.keys(TEAM_TRANSLATOR).find(k => k.toLowerCase() === t.toLowerCase());
+                if (teamKey) {
+                    const orgData = TEAM_TRANSLATOR[teamKey].org;
+                    if (Array.isArray(orgData)) {
+                        orgData.forEach(o => derivedOrgs.add(o.toLowerCase()));
+                    } else {
+                        derivedOrgs.add(orgData.toLowerCase());
+                    }
+                    derivedLeagues.add(TEAM_TRANSLATOR[teamKey].league.toLowerCase());
+                    derivedDivs.add(TEAM_TRANSLATOR[teamKey].div.toLowerCase());
+                }
+            });
+
+            if (category.type === 'Org') {
+                const match = derivedOrgs.has(category.value.toLowerCase());
+                return { pass: match, details: `Org check [Target: "${category.value}"] -> Derived Orgs: [${Array.from(derivedOrgs).join(', ')}] (${match ? 'MATCH' : 'NO MATCH'})` };
+            }
+            if (category.type === 'League') {
+                const match = derivedLeagues.has(category.value.toLowerCase());
+                return { pass: match, details: `League check [Target: "${category.value}"] -> Derived Leagues: [${Array.from(derivedLeagues).join(', ')}] (${match ? 'MATCH' : 'NO MATCH'})` };
+            }
+            if (category.type === 'Division') {
+                const match = derivedDivs.has(category.value.toLowerCase());
+                return { pass: match, details: `Division check [Target: "${category.value}"] -> Derived Divs: [${Array.from(derivedDivs).join(', ')}] (${match ? 'MATCH' : 'NO MATCH'})` };
+            }
+            if (category.type === 'Season') {
+                const val = player['Seasons Played'] || '';
+                const match = val.toUpperCase().includes(category.value.toUpperCase());
+                return { pass: match, details: `Season check [Target: "${category.value}"] -> Sheet Value: "${val}" (${match ? 'MATCH' : 'NO MATCH'})` };
+            }
+            if (category.type === 'Stat') {
+                const rawVal = player[category.stat];
+                if (rawVal === undefined) return { pass: false, details: `Stat check [${category.stat} >= ${category.threshold}] -> Column "${category.stat}" NOT FOUND!` };
+                const numVal = parseFloat(rawVal);
+                const match = !isNaN(numVal) && numVal >= category.threshold;
+                return { pass: match, details: `Stat check [${category.stat} >= ${category.threshold}] -> Sheet Value: ${numVal} (${match ? 'PASS' : 'FAIL'})` };
+            }
+            return { pass: false, details: 'Unknown category type' };
+        }
+
+        function checkUniqueSolvability(answersList) {
+            let flatAnswers = [];
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                    flatAnswers.push(answersList[r][c].map(p => p.Player));
+                }
+            }
+            
+            function canSolve(cellIndex, usedSet) {
+                if (cellIndex === 9) return true; 
+                for (let player of flatAnswers[cellIndex]) {
+                    if (!usedSet.has(player)) {
+                        usedSet.add(player);
+                        if (canSolve(cellIndex + 1, usedSet)) return true;
+                        usedSet.delete(player);
+                    }
+                }
+                return false;
+            }
+            
+            return canSolve(0, new Set());
+        }
+
+        function generateGridCategories() {
+            let attempts = 0;
+            let valid = false;
+            
+            logDebug("Generating a 100% uniquely solvable grid...", "log-info");
+
+            // Increased attempt limit to 2000 to accommodate the expanded and more specific team pool
+            while (!valid && attempts < 2000) {
+                attempts++;
+                let shuffledCats = [...CATEGORY_POOL].sort(() => 0.5 - Math.random());
+                columns = [shuffledCats[0], shuffledCats[1], shuffledCats[2]];
+                rows = [shuffledCats[3], shuffledCats[4], shuffledCats[5]];
+                
+                validAnswersList = [[[],[],[]], [[],[],[]], [[],[],[]]];
+                let hasEmptySquare = false;
+
+                for (let r = 0; r < 3; r++) {
+                    for (let c = 0; c < 3; c++) {
+                        let matches = playersData.filter(p => evaluateCondition(p, columns[c]).pass && evaluateCondition(p, rows[r]).pass);
+                        validAnswersList[r][c] = matches;
+                        
+                        if (matches.length === 0) {
+                            hasEmptySquare = true;
+                        }
+                    }
+                }
+                
+                if (hasEmptySquare) {
+                    valid = false;
+                    continue;
+                }
+                
+                valid = checkUniqueSolvability(validAnswersList);
+            }
+            
+            if (valid) {
+                logDebug(`Solvable grid generated in ${attempts} attempts!`, "log-header");
+            } else {
+                logDebug(`WARNING: Could not find a uniquely solvable grid after 2000 attempts. Check sheet data.`, "log-fail");
+            }
+        }
+
+        // ==========================================
+        // 5. UI RENDERING
+        // ==========================================
+
+        function buildGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = ''; 
+            grid.innerHTML += `<div class="empty-cell"></div>`;
+
+            columns.forEach(col => {
+                grid.innerHTML += `<div class="header-cell">${col.label}</div>`;
+            });
+
+            for (let r = 0; r < 3; r++) {
+                grid.innerHTML += `<div class="header-cell">${rows[r].label}</div>`;
+                for (let c = 0; c < 3; c++) {
+                    grid.innerHTML += `
+                        <div class="game-cell" data-row="${r}" data-col="${c}" onclick="openModal(${r}, ${c})">
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // ==========================================
+        // 6. GAME LOGIC & SEARCH
+        // ==========================================
+
+        function openModal(r, c) {
+            const cell = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
+            if (cell.classList.contains('correct')) return;
+
+            currentCell = { r, c, element: cell };
+            document.getElementById('modal').style.display = 'flex';
+            
+            const searchInput = document.getElementById('player-search');
+            searchInput.value = '';
+            document.getElementById('custom-search-results').innerHTML = ''; 
+            
+            const validForSquare = validAnswersList[r][c];
+            const unusedValidPlayers = validForSquare.filter(p => !usedPlayers.includes(p.Player));
+            const possibleCount = unusedValidPlayers.length;
+            const playerWord = possibleCount === 1 ? 'player' : 'players';
+            
+            searchInput.placeholder = `Search... (${possibleCount} possible correct ${playerWord})`;
+            logDebug(`Opened square at Row ${r+1}, Col ${c+1} (${possibleCount} unused valid answers remain)`, "log-info");
+            
+            searchInput.focus();
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            currentCell = null;
+        }
+
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('player-search').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const resultsContainer = document.getElementById('custom-search-results');
+            resultsContainer.innerHTML = '';
+
+            if (term.length < 1) return;
+
+            const matches = playersData.filter(p => p.Player && p.Player.toLowerCase().includes(term)).slice(0, 30);
+            
+            matches.forEach(player => {
+                const item = document.createElement('div');
+                item.className = 'search-result-item';
+                
+                const seasonsText = player['Seasons Played'] ? `Seasons: ${player['Seasons Played']}` : 'No Season Data';
+                
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'player-info';
+                infoDiv.innerHTML = `
+                    <div class="player-name">${player.Player}</div>
+                    <div class="player-subtext">${seasonsText}</div>
+                `;
+                
+                const selectBtn = document.createElement('button');
+                selectBtn.className = 'select-btn';
+                selectBtn.textContent = 'Select';
+                selectBtn.onclick = () => makeGuess(player);
+                
+                item.appendChild(infoDiv);
+                item.appendChild(selectBtn);
+                resultsContainer.appendChild(item);
+            });
+        });
+
+        function makeGuess(player) {
+            guesses++;
+            document.getElementById('guess-count').textContent = guesses;
+
+            const colCat = columns[currentCell.c];
+            const rowCat = rows[currentCell.r];
+            const activeCellElement = currentCell.element;
+
+            logDebug(`--- EVALUATING GUESS #${guesses}: "${player.Player}" ---`, "log-header");
+
+            if (usedPlayers.includes(player.Player)) {
+                logDebug(`RESULT: INCORRECT GUESS. Player "${player.Player}" has already been used on this grid.`, "log-fail");
+                activeCellElement.style.backgroundColor = 'var(--wrong)';
+                setTimeout(() => {
+                    if(!activeCellElement.classList.contains('correct')) {
+                        activeCellElement.style.backgroundColor = 'var(--cell-bg)';
+                    }
+                }, 800);
+                closeModal(); 
+                return;
+            }
+
+            const colEval = evaluateCondition(player, colCat);
+            logDebug(`Col Category [${colCat.label}]: ${colEval.details}`, colEval.pass ? 'log-info' : 'log-fail');
+
+            const rowEval = evaluateCondition(player, rowCat);
+            logDebug(`Row Category [${rowCat.label}]: ${rowEval.details}`, rowEval.pass ? 'log-info' : 'log-fail');
+
+            if (colEval.pass && rowEval.pass) {
+                logDebug(`RESULT: CORRECT! Adding ${player.Player} to used players list.`, "log-pass");
+                
+                usedPlayers.push(player.Player);
+                
+                activeCellElement.innerHTML = `
+                    <img src="${player.Player}.png" alt="${player.Player}" class="player-image" onerror="this.style.display='none'">
+                    <div class="player-name-overlay">${player.Player}</div>
+                `;
+                activeCellElement.classList.add('correct');
+                
+                if (usedPlayers.length === 9) {
+                    logDebug(`GAME WON! All 9 squares filled successfully.`, "log-pass");
+                    setTimeout(() => {
+                        document.getElementById('final-guess-count').textContent = guesses;
+                        document.getElementById('win-modal').style.display = 'flex';
+                    }, 600);
+                }
+
+            } else {
+                logDebug(`RESULT: INCORRECT GUESS. (Column Pass: ${colEval.pass}, Row Pass: ${rowEval.pass})`, "log-fail");
+                activeCellElement.style.backgroundColor = 'var(--wrong)';
+                setTimeout(() => {
+                    if(!activeCellElement.classList.contains('correct')) {
+                        activeCellElement.style.backgroundColor = 'var(--cell-bg)';
+                    }
+                }, 800);
+            }
+
+            closeModal(); 
+        }
+
+        window.onload = initGame;
+    </script>
+</body>
+</html>
