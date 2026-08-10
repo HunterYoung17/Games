@@ -69,6 +69,7 @@
         .mode-cards {
             display: flex;
             gap: 30px;
+            margin-top: 30px;
         }
 
         .mode-card {
@@ -108,39 +109,81 @@
             margin: 0;
         }
 
-        /* Top Navigation Bar Mimic */
+        /* Top Navigation Bar */
         header {
             width: 100%;
             background-color: var(--bg-panel);
             border-bottom: 1px solid var(--border-color);
-            padding: 15px 40px;
+            padding: 12px 30px;
             display: flex;
             align-items: center;
-            gap: 30px;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-btn:hover {
+            color: var(--text-main);
+            border-color: var(--text-muted);
         }
 
         .logo-text {
             font-size: 1.5rem;
-            font-weight: 800;
+            font-weight: 900;
             color: var(--text-main);
             letter-spacing: 1px;
+            font-style: italic;
         }
         
         .logo-text span {
             color: var(--accent-gold);
         }
 
-        .nav-links {
+        .header-right {
             display: flex;
-            gap: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
+            align-items: center;
+            gap: 15px;
         }
 
-        .nav-links span:first-child {
-            color: var(--accent-gold);
+        .header-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: var(--bg-card);
+            padding: 6px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .header-stat-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header-stat-val {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
         }
 
         /* Main Game Layout */
@@ -163,28 +206,87 @@
             gap: 20px;
         }
 
-        .spin-header {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
+        .spin-showcase {
             background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .spin-panels-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background-color: var(--bg-base);
             padding: 20px;
             border-radius: 12px;
             border: 1px solid var(--border-color);
-            gap: 15px;
         }
 
-        .spin-badges-container {
+        .spin-panel {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 15px;
+            justify-content: center;
+            width: 140px;
+            height: 160px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .spin-panel-val {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .spin-panel-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .spin-divider {
+            color: var(--text-muted);
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .arrow-btn {
+            background: none;
+            border: none;
+            color: var(--accent-gold);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0 10px;
+            transition: 0.2s;
+        }
+
+        .arrow-btn:disabled {
+            color: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .arrow-btn:hover:not(:disabled) {
+            transform: scale(1.2);
+            color: var(--accent-gold-hover);
         }
 
         .org-logo {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             object-fit: contain;
+            margin-bottom: 10px;
             display: none;
         }
 
@@ -193,83 +295,47 @@
             transform: scale(0.9);
         }
 
-        .badge {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            transition: 0.1s ease;
-        }
-
-        .badge.active {
-            border-color: var(--accent-gold);
-            color: var(--accent-gold);
-        }
-
-        .spin-controls-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        button.action-btn {
+        button.primary-spin-btn {
             background-color: var(--accent-gold);
             color: #000;
             border: none;
-            padding: 12px 24px;
-            font-size: 1rem;
+            padding: 16px;
+            font-size: 1.1rem;
             font-weight: 800;
             cursor: pointer;
-            border-radius: 30px;
+            border-radius: 8px;
             text-transform: uppercase;
+            width: 100%;
             transition: 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        button.action-btn:hover:not(:disabled) {
+        button.primary-spin-btn:hover:not(:disabled) {
             background-color: var(--accent-gold-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
         }
 
-        button.action-btn:disabled {
+        button.primary-spin-btn:disabled {
             background-color: #555;
-            cursor: not-allowed;
             color: #888;
+            cursor: not-allowed;
             box-shadow: none;
-            transform: none;
-        }
-
-        button.secondary-btn {
-            background-color: var(--bg-card);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            font-size: 0.8rem;
-            padding: 10px 15px;
-        }
-        
-        button.secondary-btn:hover:not(:disabled) {
-            border-color: var(--accent-gold);
-            background-color: var(--bg-hover);
-            color: var(--accent-gold);
         }
 
         /* Filter Bar */
         .draft-pool-header {
             display: flex;
             align-items: center;
-            gap: 15px;
+            justify-content: space-between;
             margin-bottom: -5px;
         }
 
         #pool-status {
             font-size: 0.9rem;
             color: var(--text-muted);
-            margin-right: auto;
         }
 
         .filters-container {
@@ -282,8 +348,8 @@
             color: var(--text-muted);
             border: 1px solid var(--border-color);
             padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
             font-weight: 700;
             cursor: pointer;
             text-transform: uppercase;
@@ -360,23 +426,28 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-width: 35px;
+            min-width: 45px;
         }
 
         .stat-val {
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--text-main);
         }
 
+        .stat-val.ovr-val {
+            font-size: 1.3rem;
+            color: var(--accent-gold);
+        }
+
         .stat-label {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: var(--text-muted);
             text-transform: uppercase;
             margin-top: 2px;
         }
 
-        /* Right Column: Roster Board */
+        /* Right Column: Roster Grid */
         .roster-section {
             flex: 1.2;
             background-color: var(--bg-panel);
@@ -387,22 +458,23 @@
             flex-direction: column;
         }
 
-        .roster-header-container {
+        .roster-header-tabs {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            gap: 10px;
             margin-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
         }
 
-        .roster-header {
-            font-size: 1.2rem;
+        .roster-tab {
+            background-color: rgba(212, 175, 55, 0.1);
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
             font-weight: 700;
-            color: var(--text-main);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin: 0;
+            cursor: default;
         }
 
         #roster-grid {
@@ -412,7 +484,7 @@
         }
 
         .division-column {
-            background-color: var(--bg-card);
+            background-color: var(--bg-base);
             padding: 20px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
@@ -420,55 +492,444 @@
 
         .division-column h2 {
             text-align: center;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
             margin-top: 0;
-            margin-bottom: 5px;
+            margin-bottom: 15px;
             color: var(--accent-gold);
-            font-size: 1.2rem;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .cap-tracker {
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: var(--text-muted);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             display: none; 
         }
 
         .roster-slot {
-            background-color: var(--bg-base);
-            margin: 10px 0;
+            background-color: transparent;
+            margin: 12px 0;
             padding: 15px;
-            border-radius: 6px;
+            border-radius: 8px;
             text-align: center;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
-            border: 1px dashed #555;
+            border: 2px dashed var(--border-color);
             cursor: pointer;
             transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            min-height: 120px;
+        }
+
+        .roster-slot::before {
+            content: "+";
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border: 1px solid var(--text-muted);
+            border-radius: 50%;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
         }
 
         .roster-slot:hover {
-            background-color: var(--bg-hover);
-            border-color: var(--text-main);
-            color: var(--text-main);
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
+
+        .roster-slot:hover::before {
+            border-color: var(--accent-gold);
         }
 
         .roster-slot.filled {
             border-style: solid;
-            border-color: var(--accent-gold);
-            background-color: rgba(212, 175, 55, 0.05);
-            color: var(--accent-gold);
-            font-weight: bold;
+            background-color: var(--bg-card);
             cursor: default;
+            padding: 12px;
+            min-height: 125px;
         }
 
-        /* Responsive */
+        .roster-slot.filled::before {
+            display: none;
+        }
+
+        .slot-card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 4px;
+        }
+
+        .slot-card-logo {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .slot-card-name {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-top: 2px;
+        }
+
+        .slot-card-sub {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .slot-card-score {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--text-main);
+            margin-top: 2px;
+        }
+
+        /* --- Live Simulation Matchup Screen --- */
+        #simulation-screen {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            padding: 40px;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sim-header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-panel);
+            padding: 20px 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .sim-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--text-main);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .sim-title span {
+            color: var(--accent-gold);
+        }
+
+        .sim-record {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--accent-gold);
+        }
+
+        /* Speed Controls */
+        .sim-speed-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .speed-btn {
+            background-color: var(--bg-card);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            text-transform: uppercase;
+        }
+
+        .speed-btn:hover {
+            border-color: var(--text-main);
+            color: var(--text-main);
+        }
+
+        .speed-btn.active {
+            color: var(--accent-gold);
+            border-color: var(--accent-gold);
+            background-color: rgba(212, 175, 55, 0.1);
+        }
+
+        .matchup-arena {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 400px;
+        }
+
+        .team-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 40%;
+        }
+
+        .team-identity {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .team-identity img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .team-identity h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            color: var(--text-main);
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .team-roster {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .team-ovr-badge {
+            margin-top: 10px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .team-ovr-badge span {
+            color: var(--accent-gold);
+            font-size: 1rem;
+            margin-left: 5px;
+        }
+
+        .sim-player-card {
+            background-color: var(--bg-card);
+            border: 2px solid;
+            border-radius: 12px;
+            padding: 15px;
+            width: 130px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 5px;
+        }
+
+        .sim-player-logo {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+        }
+
+        .sim-player-name {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text-main);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .sim-player-sub {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .sim-player-score {
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin-top: 5px;
+        }
+
+        .vs-scoreboard {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bo5-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .score-text {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--text-main);
+            background: var(--bg-card);
+            padding: 10px 30px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            letter-spacing: 5px;
+            transition: 0.2s;
+            white-space: nowrap;
+            min-width: 190px;
+            text-align: center;
+        }
+
+        /* --- End Rosters Modal with Tabs --- */
+        #rosters-modal {
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(11, 14, 20, 0.95); 
+            z-index: 3000; 
+            justify-content: center; 
+            align-items: center;
+            padding: 20px;
+        }
+
+        .rosters-content {
+            background: var(--bg-panel); 
+            border: 1px solid var(--border-color); 
+            border-radius: 12px; 
+            max-width: 1000px; 
+            width: 100%; 
+            max-height: 90vh; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .rosters-modal-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rosters-modal-header h2 {
+            margin: 0;
+            color: var(--text-main);
+            text-transform: uppercase;
+        }
+
+        .modal-tabs {
+            display: flex;
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 30px;
+        }
+
+        .modal-tab-btn {
+            background: none;
+            border: none;
+            padding: 15px 25px;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: 0.2s;
+        }
+
+        .modal-tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .modal-tab-btn.active {
+            color: var(--accent-gold);
+            border-bottom-color: var(--accent-gold);
+        }
+
+        .modal-tab-content {
+            display: none;
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-tab-content.active {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .roster-group {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            width: 100%;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .roster-group-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .roster-group-title img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+
+        .roster-group-cards {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
         @media (max-width: 1000px) {
             .game-container { flex-direction: column; }
             #roster-grid { grid-template-columns: 1fr; }
+            .matchup-arena { flex-direction: column; gap: 30px; }
+            .team-side { width: 100%; }
+            .sim-speed-controls { flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -492,12 +953,18 @@
         </div>
     </div>
 
+    <!-- Header -->
     <header>
-        <div class="logo-text">48<span>-</span>0</div>
-        <div class="nav-links">
-            <span>HOME</span>
-            <span>LEADERBOARDS</span>
-            <span>CHALLENGES</span>
+        <div class="header-left">
+            <button class="nav-btn" onclick="location.reload()">&#8592; Home</button>
+            <div class="logo-text">48-0<span>DRAFT</span></div>
+        </div>
+        <div class="header-right">
+            <div class="header-stat">
+                <span class="header-stat-label">Picks</span>
+                <span class="header-stat-val"><span id="picks-tracker">0</span> / 12</span>
+            </div>
+            <button id="reset-btn" class="nav-btn" style="padding: 10px 16px;">&#8634; Reset</button>
         </div>
     </header>
 
@@ -505,21 +972,30 @@
         
         <!-- Left Side: Draft Interface -->
         <section class="draft-section">
-            <div class="spin-header">
-                <div class="spin-badges-container">
-                    <img id="active-org-logo" src="" class="org-logo" alt="Org Logo">
-                    <span id="badge-org" class="badge">TEAM</span>
-                    <span id="badge-season" class="badge">SEASON</span>
+            <div class="spin-showcase">
+                <div class="spin-panels-container">
+                    <button id="respin-org-btn" class="arrow-btn" disabled>&#9664;</button>
+                    
+                    <div class="spin-panel">
+                        <img id="active-org-logo" src="" class="org-logo" alt="Org Logo">
+                        <div id="badge-org" class="spin-panel-val">?</div>
+                        <div class="spin-panel-label">TEAM</div>
+                    </div>
+                    
+                    <div class="spin-divider">X</div>
+                    
+                    <div class="spin-panel">
+                        <div id="badge-season" class="spin-panel-val">?</div>
+                        <div class="spin-panel-label">SEASON</div>
+                    </div>
+                    
+                    <button id="respin-season-btn" class="arrow-btn" disabled>&#9654;</button>
                 </div>
-                <div class="spin-controls-group">
-                    <button id="respin-season-btn" class="action-btn secondary-btn" disabled>Respin Season</button>
-                    <button id="respin-org-btn" class="action-btn secondary-btn" disabled>Respin Team</button>
-                    <button id="spin-btn" class="action-btn">Spin All</button>
-                </div>
+                
+                <button id="spin-btn" class="primary-spin-btn">🎰 Spin the Wheel</button>
             </div>
             
             <div class="draft-pool-header">
-                <div id="pool-status">0 players available</div>
                 <div class="filters-container" id="filters-container">
                     <button class="filter-btn active" data-filter="ALL">All</button>
                     <button class="filter-btn" data-filter="CCS">CCS</button>
@@ -527,76 +1003,128 @@
                     <button class="filter-btn" data-filter="CAS">CAS</button>
                     <button class="filter-btn" data-filter="CNL">CNL</button>
                 </div>
+                <div id="pool-status">0 players available</div>
             </div>
-            <div id="draft-pool">
-                <!-- Players will populate here -->
-            </div>
+            <div id="draft-pool"></div>
         </section>
 
         <!-- Right Side: Roster Grid -->
         <section class="roster-section">
-            <div class="roster-header-container">
-                <h2 class="roster-header" id="roster-header-text">Organization Roster</h2>
-                <button id="reset-btn" class="action-btn" style="background-color: #ff4d4d; font-size: 0.8rem; padding: 8px 15px;">Reset Draft</button>
+            <div class="roster-header-tabs">
+                <div class="roster-tab">&#11042; Organization Roster</div>
             </div>
+            
             <div id="roster-grid">
                 <div class="division-column" id="col-ccs">
                     <h2>CCS</h2>
                     <div class="cap-tracker" id="cap-ccs"></div>
-                    <div class="roster-slot" data-div="CCS">Empty Slot</div>
-                    <div class="roster-slot" data-div="CCS">Empty Slot</div>
-                    <div class="roster-slot" data-div="CCS">Empty Slot</div>
+                    <div class="roster-slot" data-div="CCS">Player</div>
+                    <div class="roster-slot" data-div="CCS">Player</div>
+                    <div class="roster-slot" data-div="CCS">Player</div>
                 </div>
                 <div class="division-column" id="col-cpl">
                     <h2>CPL</h2>
                     <div class="cap-tracker" id="cap-cpl"></div>
-                    <div class="roster-slot" data-div="CPL">Empty Slot</div>
-                    <div class="roster-slot" data-div="CPL">Empty Slot</div>
-                    <div class="roster-slot" data-div="CPL">Empty Slot</div>
+                    <div class="roster-slot" data-div="CPL">Player</div>
+                    <div class="roster-slot" data-div="CPL">Player</div>
+                    <div class="roster-slot" data-div="CPL">Player</div>
                 </div>
                 <div class="division-column" id="col-cas">
                     <h2>CAS</h2>
                     <div class="cap-tracker" id="cap-cas"></div>
-                    <div class="roster-slot" data-div="CAS">Empty Slot</div>
-                    <div class="roster-slot" data-div="CAS">Empty Slot</div>
-                    <div class="roster-slot" data-div="CAS">Empty Slot</div>
+                    <div class="roster-slot" data-div="CAS">Player</div>
+                    <div class="roster-slot" data-div="CAS">Player</div>
+                    <div class="roster-slot" data-div="CAS">Player</div>
                 </div>
                 <div class="division-column" id="col-cnl">
                     <h2>CNL</h2>
                     <div class="cap-tracker" id="cap-cnl"></div>
-                    <div class="roster-slot" data-div="CNL">Empty Slot</div>
-                    <div class="roster-slot" data-div="CNL">Empty Slot</div>
-                    <div class="roster-slot" data-div="CNL">Empty Slot</div>
+                    <div class="roster-slot" data-div="CNL">Player</div>
+                    <div class="roster-slot" data-div="CNL">Player</div>
+                    <div class="roster-slot" data-div="CNL">Player</div>
                 </div>
             </div>
             
-            <!-- Simulation Controls -->
             <div id="sim-controls" style="display: none; margin-top: 30px; text-align: center; width: 100%;">
-                <button id="simulate-btn" class="action-btn" style="width: 100%; max-width: 400px;">Simulate 48-Game Season</button>
+                <button id="simulate-btn" class="primary-spin-btn" style="max-width: 400px; margin: 0 auto;">Enter Regular Season</button>
             </div>
         </section>
-
     </div>
 
-    <!-- Results Modal -->
-    <div id="results-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center;">
-        <div style="background: var(--bg-panel); border: 2px solid var(--accent-gold); padding: 30px; border-radius: 12px; text-align: center; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto;">
-            <h2 style="color: var(--accent-gold); font-size: 2.5rem; margin-top: 0; text-transform: uppercase;">Season Results</h2>
-            
-            <div id="roster-summary" style="margin-bottom: 25px;"></div>
+    <!-- Live Simulation Matchup Screen -->
+    <div id="simulation-screen">
+        <div class="sim-header-container">
+            <h1 class="sim-title" id="sim-current-league">CCS <span>Match 1 / 12</span></h1>
+            <div class="sim-record" id="live-total-record">0 - 0</div>
+        </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; text-align: left; font-size: 1.2rem; color: var(--text-main);">
-                <div id="res-ccs" style="background: var(--bg-card); padding: 15px; border-radius: 8px; text-align: center;">CCS: <span></span></div>
-                <div id="res-cpl" style="background: var(--bg-card); padding: 15px; border-radius: 8px; text-align: center;">CPL: <span></span></div>
-                <div id="res-cas" style="background: var(--bg-card); padding: 15px; border-radius: 8px; text-align: center;">CAS: <span></span></div>
-                <div id="res-cnl" style="background: var(--bg-card); padding: 15px; border-radius: 8px; text-align: center;">CNL: <span></span></div>
+        <div class="sim-speed-controls">
+            <button class="speed-btn active" data-speed="1">1x Speed</button>
+            <button class="speed-btn" data-speed="2">2x Speed</button>
+            <button class="speed-btn" data-speed="4">4x Speed</button>
+            <button class="speed-btn" data-speed="max">Skip to End &#x23E9;</button>
+        </div>
+
+        <div class="matchup-arena">
+            
+            <!-- User Team Side -->
+            <div class="team-side left">
+                <div class="team-identity">
+                    <img id="match-user-org-logo" src="" alt="Your Org" onerror="this.src='logos/ccs.png'">
+                    <h3 id="match-user-title">YOUR TEAM</h3>
+                </div>
+                <div class="team-roster" id="match-user-roster">
+                    <!-- Cards injected here -->
+                </div>
+                <div class="team-ovr-badge" id="match-user-team-ovr">Team OVR: <span>0</span></div>
             </div>
 
-            <div style="border-top: 1px solid var(--border-color); padding-top: 20px; font-size: 2rem; font-weight: bold; color: var(--text-main);">
-                FINAL RECORD: <span id="res-total" style="color: var(--accent-gold);"></span>
+            <!-- Scoreboard -->
+            <div class="vs-scoreboard">
+                <div class="bo5-text">Best of 5</div>
+                <div class="score-text" id="live-match-score">0 - 0</div>
+            </div>
+
+            <!-- Opponent Team Side -->
+            <div class="team-side right">
+                <div class="team-identity">
+                    <img id="match-opp-logo" src="" alt="Opponent">
+                    <h3 id="match-opp-title">TEAM</h3>
+                </div>
+                <div class="team-roster" id="match-opp-roster">
+                    <!-- Cards injected here -->
+                </div>
+                <div class="team-ovr-badge" id="match-opp-team-ovr">Team OVR: <span>0</span></div>
+            </div>
+
+        </div>
+
+        <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
+            <button id="view-rosters-btn" class="primary-spin-btn" style="display: none; max-width: 300px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color);">View League Rosters</button>
+            <button id="play-again-btn" class="primary-spin-btn" style="display: none; max-width: 300px;" onclick="location.reload()">Play Again</button>
+        </div>
+    </div>
+
+    <!-- Generated Opponent Rosters Modal (Tabbed) -->
+    <div id="rosters-modal">
+        <div class="rosters-content">
+            <div class="rosters-modal-header">
+                <h2>Generated Opponents</h2>
+                <button class="nav-btn" onclick="document.getElementById('rosters-modal').style.display='none'">Close</button>
             </div>
             
-            <button class="action-btn" onclick="document.getElementById('results-modal').style.display='none'; resetDraft();" style="margin-top: 30px; background: #555; color: white;">Play Again</button>
+            <div class="modal-tabs">
+                <button class="modal-tab-btn active" data-tab="CCS">CCS</button>
+                <button class="modal-tab-btn" data-tab="CPL">CPL</button>
+                <button class="modal-tab-btn" data-tab="CAS">CAS</button>
+                <button class="modal-tab-btn" data-tab="CNL">CNL</button>
+            </div>
+
+            <div id="tab-content-CCS" class="modal-tab-content active"></div>
+            <div id="tab-content-CPL" class="modal-tab-content"></div>
+            <div id="tab-content-CAS" class="modal-tab-content"></div>
+            <div id="tab-content-CNL" class="modal-tab-content"></div>
+
         </div>
     </div>
 
@@ -611,18 +1139,22 @@
         let activePlayerLeagueLevel = null;
         let isSpinning = false;
         let currentGameMode = 'classic'; 
+        let opponentSchedule = null;
+        let userDraftedOrgName = null;
 
-        // State trackers for respins
         let currentSpunSeason = null;
         let currentSpunOrg = null;
         let respinSeasonUsed = false;
         let respinOrgUsed = false;
 
+        let simSpeed = 1;
+        let skipSim = false;
+
         let leagueAverages = {
-            CCS: { count: 0, totalScore: 0, totalGPG: 0, totalMMR: 0 },
-            CPL: { count: 0, totalScore: 0, totalGPG: 0, totalMMR: 0 },
-            CAS: { count: 0, totalScore: 0, totalGPG: 0, totalMMR: 0 },
-            CNL: { count: 0, totalScore: 0, totalGPG: 0, totalMMR: 0 }
+            CCS: { count: 0, totalOVR: 0, totalMMR: 0 },
+            CPL: { count: 0, totalOVR: 0, totalMMR: 0 },
+            CAS: { count: 0, totalOVR: 0, totalMMR: 0 },
+            CNL: { count: 0, totalOVR: 0, totalMMR: 0 }
         };
         
         let leagueCaps = { CCS: 0, CPL: 0, CAS: 0, CNL: 0 };
@@ -634,11 +1166,21 @@
             CNL: []
         };
 
-        const leagueLevels = {
-            "CCS": 1,
-            "CPL": 2,
-            "CAS": 3,
-            "CNL": 4
+        const leagueLevels = { "CCS": 1, "CPL": 2, "CAS": 3, "CNL": 4 };
+
+        const orgColors = {
+            "Shockwave": "#2080ff",
+            "Blasters": "#ff7700",
+            "Stars": "#a040ff",
+            "Pirates": "#8b5a2b",
+            "Howlers": "#ff66b2",
+            "Moose": "#d2b48c",
+            "Anglers": "#00ced1",
+            "Samurai": "#ff3333",
+            "Ninjas": "#718096",
+            "Flyers": "#2ecc71",
+            "Vipers": "#f1c40f",
+            "Zebras": "#ffffff"
         };
 
         const orgTeams = {
@@ -656,6 +1198,21 @@
             "Zebras": ["Zebras", "Buffalo", "Elephants", "Rhinos"]
         };
 
+        const orgRivalries = {
+            "Anglers": "Samurai",
+            "Samurai": "Anglers",
+            "Flyers": "Ninjas",
+            "Ninjas": "Flyers",
+            "Zebras": "Vipers",
+            "Vipers": "Zebras",
+            "Shockwave": "Stars",
+            "Stars": "Shockwave",
+            "Blasters": "Pirates",
+            "Pirates": "Blasters",
+            "Moose": "Howlers",
+            "Howlers": "Moose"
+        };
+
         const spinBtn = document.getElementById('spin-btn');
         const respinSeasonBtn = document.getElementById('respin-season-btn');
         const respinOrgBtn = document.getElementById('respin-org-btn');
@@ -668,8 +1225,8 @@
         const filtersContainer = document.getElementById('filters-container');
         const rosterSlots = document.querySelectorAll('.roster-slot');
         const filterBtns = document.querySelectorAll('.filter-btn');
+        const picksTracker = document.getElementById('picks-tracker');
 
-        // Weighted Probability Engine
         function getWeightedSeason(availableSeasons) {
             if (availableSeasons.length === 5) {
                 const roll = Math.random() * 100;
@@ -687,7 +1244,6 @@
             return availableSeasons[0];
         }
 
-        // Load data on startup
         Papa.parse(SHEET_CSV_URL, {
             download: true,
             header: true,
@@ -700,8 +1256,7 @@
                     const targetLeague = leagueAverages[pLeague] ? pLeague : 'CNL';
                     
                     leagueAverages[targetLeague].count += 1;
-                    leagueAverages[targetLeague].totalScore += parseFloat(p['Avg Score'] || p['avg score']) || 0;
-                    leagueAverages[targetLeague].totalGPG += parseFloat(p.GPG) || 0;
+                    leagueAverages[targetLeague].totalOVR += parseFloat(p.OVR || p.Overall || p.ovr || p.overall) || 60;
                     leagueAverages[targetLeague].totalMMR += parseFloat(p['League mmr']) || 0;
                 });
                 
@@ -722,7 +1277,6 @@
             }
         });
 
-        // Mode Initialization & Reset
         function startGame(mode) {
             if (database.length === 0) return;
             currentGameMode = mode;
@@ -734,13 +1288,16 @@
         function resetDraft() {
             pickedPlayers.clear();
             userDraftedTeams = { CCS: [], CPL: [], CAS: [], CNL: [] };
+            userDraftedOrgName = null;
             
             respinSeasonUsed = false;
             respinOrgUsed = false;
 
             rosterSlots.forEach(slot => {
-                slot.innerText = 'Empty Slot';
+                slot.innerHTML = `Player`;
                 slot.classList.remove('filled');
+                slot.style.borderColor = 'var(--border-color)';
+                slot.style.boxShadow = 'none';
             });
 
             if (currentGameMode === 'cap') {
@@ -759,16 +1316,15 @@
             poolStatus.innerText = '0 players available';
             filtersContainer.style.display = 'none';
             
-            badgeOrg.innerText = 'TEAM';
-            badgeOrg.classList.remove('active');
-            badgeSeason.innerText = 'SEASON';
-            badgeSeason.classList.remove('active');
+            badgeOrg.innerText = '?';
+            badgeSeason.innerText = '?';
             orgLogo.style.display = 'none';
 
             currentSpunSeason = null;
             currentSpunOrg = null;
             activePlayerToPlace = null;
             activePlayerLeagueLevel = null;
+            picksTracker.innerText = "0";
 
             spinBtn.disabled = false;
             respinSeasonBtn.disabled = true;
@@ -776,12 +1332,10 @@
             
             document.getElementById('sim-controls').style.display = 'none';
             document.querySelector('.draft-section').style.display = 'flex';
-            document.getElementById('roster-header-text').innerText = 'Organization Roster';
         }
 
         resetBtn.addEventListener('click', resetDraft);
 
-        // Filter Logic
         function applyFilter(filterVal) {
             filterBtns.forEach(btn => {
                 btn.classList.toggle('active', btn.getAttribute('data-filter') === filterVal);
@@ -832,7 +1386,6 @@
             return validCount;
         }
 
-        // Master Spin Engine
         function triggerSpin(keepOrg = false, keepSeason = false) {
             if (isSpinning) return;
 
@@ -851,9 +1404,6 @@
             draftPoolContainer.innerHTML = '';
             filtersContainer.style.display = 'none';
             poolStatus.innerText = 'Spinning...';
-            
-            if (!keepOrg) badgeOrg.classList.remove('active');
-            if (!keepSeason) badgeSeason.classList.remove('active');
             
             orgLogo.classList.add('spinning');
             orgLogo.style.display = 'block';
@@ -877,7 +1427,7 @@
 
             let spinCount = 0;
             const maxSpins = 15; 
-            const spinSpeed = 80; 
+            const spinSpeedUi = 80; 
 
             const spinTimer = setInterval(() => {
                 const tempSeason = keepSeason ? currentSpunSeason : getWeightedSeason(availableSeasons);
@@ -885,7 +1435,7 @@
 
                 badgeOrg.innerText = tempOrg;
                 badgeSeason.innerText = tempSeason.toUpperCase();
-                orgLogo.src = `logos/${tempOrg.toLowerCase()}.png`;
+                orgLogo.src = `logos/${tempOrg.toLowerCase().replace(/\s+/g, '')}.png`;
                 
                 spinCount++;
                 
@@ -903,13 +1453,12 @@
 
                     currentSpunSeason = finalSeason;
                     currentSpunOrg = finalOrg;
+                    if(!userDraftedOrgName) userDraftedOrgName = finalOrg;
 
                     badgeOrg.innerText = finalOrg;
-                    badgeOrg.classList.add('active');
                     badgeSeason.innerText = finalSeason.toUpperCase();
-                    badgeSeason.classList.add('active');
                     
-                    orgLogo.src = `logos/${finalOrg.toLowerCase()}.png`;
+                    orgLogo.src = `logos/${finalOrg.toLowerCase().replace(/\s+/g, '')}.png`;
                     orgLogo.classList.remove('spinning');
 
                     const availablePlayers = database.filter(row => {
@@ -925,9 +1474,9 @@
                     });
 
                     availablePlayers.sort((a, b) => {
-                        const scoreA = parseFloat(a['Avg Score'] || a['avg score']) || 0;
-                        const scoreB = parseFloat(b['Avg Score'] || b['avg score']) || 0;
-                        return scoreB - scoreA;
+                        const ovrA = parseInt(a.OVR || a.Overall || a.ovr || a.overall || 60, 10);
+                        const ovrB = parseInt(b.OVR || b.Overall || b.ovr || b.overall || 60, 10);
+                        return ovrB - ovrA;
                     });
 
                     displayDraftPool(availablePlayers);
@@ -935,11 +1484,10 @@
                     isSpinning = false;
                     spinBtn.disabled = false;
                     
-                    // Only re-enable respin buttons if they haven't been used yet this draft
                     respinSeasonBtn.disabled = respinSeasonUsed;
                     respinOrgBtn.disabled = respinOrgUsed;
                 }
-            }, spinSpeed);
+            }, spinSpeedUi);
         }
 
         spinBtn.addEventListener('click', () => triggerSpin(false, false));
@@ -973,6 +1521,7 @@
                 const cleanLeagueString = pLeague.toUpperCase().trim();
                 const pLevel = leagueLevels[cleanLeagueString] || 4; 
                 const pMMR = parseFloat(p['League mmr']) || 0;
+                const ovrVal = parseInt(p.OVR || p.Overall || p.ovr || p.overall || 60, 10);
                 
                 card.setAttribute('data-league', cleanLeagueString);
                 
@@ -983,24 +1532,12 @@
                     </div>
                     <div class="player-stats-row">
                         <div class="stat-block">
-                            <span class="stat-val">${(parseFloat(p['Avg Score'] || p['avg score']) || 0).toFixed(1)}</span>
-                            <span class="stat-label">SCORE</span>
+                            <span class="stat-val ovr-val">${ovrVal}</span>
+                            <span class="stat-label">OVR</span>
                         </div>
                         <div class="stat-block">
                             <span class="stat-val">${p['League mmr'] || 'N/A'}</span>
                             <span class="stat-label">MMR</span>
-                        </div>
-                        <div class="stat-block">
-                            <span class="stat-val">${(parseFloat(p.GPG) || 0).toFixed(1)}</span>
-                            <span class="stat-label">GPG</span>
-                        </div>
-                        <div class="stat-block">
-                            <span class="stat-val">${(parseFloat(p.APG) || 0).toFixed(1)}</span>
-                            <span class="stat-label">APG</span>
-                        </div>
-                        <div class="stat-block">
-                            <span class="stat-val">${(parseFloat(p.SPG) || 0).toFixed(1)}</span>
-                            <span class="stat-label">SPG</span>
                         </div>
                     </div>
                 `;
@@ -1059,11 +1596,28 @@
                     }
                 }
 
-                slot.innerText = activePlayerToPlace.playername;
+                const p = activePlayerToPlace;
+                const orgColor = orgColors[currentSpunOrg] || '#D4AF37';
+                const ovrVal = parseInt(p.OVR || p.Overall || p.ovr || p.overall || 60, 10);
+
                 slot.classList.add('filled');
+                slot.style.borderColor = orgColor;
+                slot.style.boxShadow = `0 0 12px ${orgColor}40`;
                 
-                pickedPlayers.add(activePlayerToPlace.playername);
-                userDraftedTeams[slotDiv].push(activePlayerToPlace);
+                const logoFileName = currentSpunOrg.toLowerCase().replace(/\s+/g, '') + '.png';
+
+                slot.innerHTML = `
+                    <div class="slot-card-content">
+                        <img src="logos/${logoFileName}" class="slot-card-logo" alt="${currentSpunOrg}" onerror="this.src='logos/ccs.png'">
+                        <div class="slot-card-name">${p.playername}</div>
+                        <div class="slot-card-sub">&#128085; ${currentSpunOrg} &bull; ${p.season.toUpperCase()}</div>
+                        <div class="slot-card-score" style="color: ${orgColor}">${ovrVal}</div>
+                    </div>
+                `;
+                
+                pickedPlayers.add(p.playername);
+                userDraftedTeams[slotDiv].push(p);
+                picksTracker.innerText = pickedPlayers.size;
 
                 if (currentGameMode === 'cap') {
                     let updatedMMR = 0;
@@ -1088,93 +1642,294 @@
                 if (pickedPlayers.size === 12) {
                     document.querySelector('.draft-section').style.display = 'none';
                     document.getElementById('sim-controls').style.display = 'block';
-                    document.getElementById('roster-header-text').innerText = 'Final Organization Roster';
                 }
             });
         });
 
-        // Simulation Engine
-        document.getElementById('simulate-btn').addEventListener('click', () => {
-            let totalWins = 0;
-            let totalLosses = 0;
-            const results = {};
-            
-            let summaryHTML = '<h3 style="color: var(--text-main); margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; font-size: 1.1rem; text-transform: uppercase;">Draft Summary</h3>';
-            summaryHTML += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left; font-size: 0.95rem;">';
+        // ----------------------------------------------------------------------
+        // LIVE SIMULATION & OPPONENT GENERATOR ENGINE
+        // ----------------------------------------------------------------------
 
-            ['CCS', 'CPL', 'CAS', 'CNL'].forEach(div => {
+        document.querySelectorAll('.speed-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
                 
-                summaryHTML += `<div style="background: var(--bg-base); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
-                    <strong style="color: var(--accent-gold); display: block; margin-bottom: 8px;">${div}</strong>`;
-                userDraftedTeams[div].forEach(p => {
-                    const pLeagueLabel = (p.League || p.league || 'CNL').toUpperCase().trim();
-                    const penaltyNote = (leagueLevels[pLeagueLabel] || 4) > leagueLevels[div] ? ` <span style="color: #ff4444; font-size: 0.75rem;">(Played Up)</span>` : '';
-                    summaryHTML += `<div style="margin-bottom: 4px;">&bull; <strong>${p.playername}</strong> <span style="color: var(--text-muted); font-size: 0.85rem;">(${p.orgname}, ${p.season.toUpperCase()})</span>${penaltyNote}</div>`;
+                const speedVal = e.target.getAttribute('data-speed');
+                if(speedVal === 'max') {
+                    skipSim = true;
+                    simSpeed = 100;
+                } else {
+                    skipSim = false;
+                    simSpeed = parseInt(speedVal);
+                }
+            });
+        });
+
+        async function simDelay(ms) {
+            if(skipSim) {
+                await new Promise(r => setTimeout(r, 0));
+                return;
+            }
+            await new Promise(r => setTimeout(r, ms / simSpeed));
+        }
+
+        function generateOpponentSchedule(userOrg) {
+            const schedule = { CCS: [], CPL: [], CAS: [], CNL: [] };
+            const leagues = ["CCS", "CPL", "CAS", "CNL"];
+            const orgKeys = Object.keys(orgTeams);
+
+            const rivalOrg = orgRivalries[userOrg] || orgKeys[0];
+            let regularSeasonOrgs = orgKeys.filter(org => org !== userOrg);
+            regularSeasonOrgs.sort(() => Math.random() - 0.5);
+
+            const finalScheduleMatchups = [...regularSeasonOrgs, rivalOrg];
+
+            leagues.forEach(league => {
+                finalScheduleMatchups.forEach(org => {
+                    let validPlayers = [];
+                    let chosenSeason = "s5";
+                    
+                    let seasonsToTry = ["s5", "s4", "s3", "s2", "s1"].sort(() => Math.random() - 0.5);
+                    const expansions = ["Vipers", "Howlers", "Moose", "Zebras"];
+                    if (expansions.includes(org)) {
+                        seasonsToTry = seasonsToTry.filter(s => s !== "s1" && s !== "s2");
+                    }
+
+                    for (let s of seasonsToTry) {
+                        let players = database.filter(row => {
+                            const belongsToOrg = orgTeams[org].includes(row.orgname);
+                            const gp = parseInt(row.GP || row.gp || row['Games Played'] || row['Games'] || 0, 10);
+                            const pLeague = (row.League || row.league || 'CNL').toUpperCase().trim();
+                            const isS1CPL = (s === 's1' && pLeague === 'CPL');
+                            return belongsToOrg && row.season.toLowerCase() === s && pLeague === league && (gp >= 10 || isS1CPL);
+                        });
+
+                        if (players.length >= 3) {
+                            validPlayers = players.sort((a,b) => {
+                                const oA = parseInt(a.OVR || a.Overall || a.ovr || a.overall || 60, 10);
+                                const oB = parseInt(b.OVR || b.Overall || b.ovr || b.overall || 60, 10);
+                                return oB - oA;
+                            }).slice(0,3);
+                            chosenSeason = s;
+                            break;
+                        }
+                    }
+
+                    if (validPlayers.length < 3) {
+                        let fallback = database.filter(row => {
+                            const belongsToOrg = orgTeams[org].includes(row.orgname);
+                            const pLeague = (row.League || row.league || 'CNL').toUpperCase().trim();
+                            return belongsToOrg && pLeague === league;
+                        }).sort((a,b) => {
+                            const oA = parseInt(a.OVR || a.Overall || a.ovr || a.overall || 60, 10);
+                            const oB = parseInt(b.OVR || b.Overall || b.ovr || b.overall || 60, 10);
+                            return oB - oA;
+                        }).slice(0,3);
+                        validPlayers = fallback;
+                        chosenSeason = fallback.length > 0 ? fallback[0].season : "s5";
+                    }
+
+                    let oppOVR = 0;
+                    validPlayers.forEach(p => {
+                        oppOVR += parseInt(p.OVR || p.Overall || p.ovr || p.overall || 60, 10);
+                    });
+                    oppOVR = oppOVR / 3;
+
+                    const exactTeamName = orgTeams[org][leagueLevels[league] - 1] || org;
+
+                    schedule[league].push({
+                        org: org,
+                        teamName: exactTeamName,
+                        season: chosenSeason,
+                        players: validPlayers,
+                        teamOVR: Math.round(oppOVR)
+                    });
                 });
-                summaryHTML += `</div>`;
-                
-                const avgScore = (leagueAverages[div].totalScore / leagueAverages[div].count) * 3;
-                const avgGPG = (leagueAverages[div].totalGPG / leagueAverages[div].count) * 3;
-                
-                const userTeam = userDraftedTeams[div];
-                let userScore = 0;
-                let userGPG = 0;
+            });
+            return schedule;
+        }
+
+        function generatePlayerCardHTML(p, orgName, displayTeamName) {
+            if(!p) return '';
+            const color = orgColors[orgName] || '#D4AF37';
+            const ovrVal = parseInt(p.OVR || p.Overall || p.ovr || p.overall || 60, 10);
+            
+            const renderName = displayTeamName || orgName;
+            const logoSafe = renderName.toLowerCase().replace(/\s+/g, '');
+            const fallbackLogoSafe = orgName.toLowerCase().replace(/\s+/g, '');
+
+            return `
+                <div class="sim-player-card" style="border-color: ${color}; box-shadow: 0 0 12px ${color}40;">
+                    <img src="logos/${logoSafe}.png" class="sim-player-logo" onerror="this.src='logos/${fallbackLogoSafe}.png'; this.onerror=function(){this.src='logos/ccs.png';};">
+                    <div class="sim-player-name" title="${p.playername}">${p.playername}</div>
+                    <div class="sim-player-sub">${renderName} &bull; ${p.season.toUpperCase()}</div>
+                    <div class="sim-player-score" style="color: ${color}">${ovrVal}</div>
+                </div>
+            `;
+        }
+
+        document.getElementById('simulate-btn').addEventListener('click', async () => {
+            document.getElementById('main-game').style.display = 'none';
+            document.getElementById('simulation-screen').style.display = 'flex';
+            
+            opponentSchedule = generateOpponentSchedule(userDraftedOrgName || "Anglers");
+
+            let userStats = { CCS: {ovr:0}, CPL: {ovr:0}, CAS: {ovr:0}, CNL: {ovr:0} };
+            ['CCS', 'CPL', 'CAS', 'CNL'].forEach(div => {
                 const slotLevel = leagueLevels[div];
-                
-                userTeam.forEach(p => {
+                userDraftedTeams[div].forEach(p => {
                     const pLeague = (p.League || p.league || 'CNL').toUpperCase().trim();
                     const pLevel = leagueLevels[pLeague] || 4; 
+                    const multiplier = 1 - ((pLevel - slotLevel) * 0.25); 
                     
-                    const leagueDiff = pLevel - slotLevel;
-                    const multiplier = 1 - (leagueDiff * 0.25); 
-
-                    userScore += (parseFloat(p['Avg Score'] || p['avg score']) || 0) * multiplier;
-                    userGPG += (parseFloat(p.GPG) || 0) * multiplier;
+                    const pOVR = parseInt(p.OVR || p.Overall || p.ovr || p.overall || 60, 10);
+                    userStats[div].ovr += pOVR * multiplier;
                 });
-
-                let winProbability = 50; 
-                
-                const gpgDiff = userGPG - avgGPG;
-                winProbability += (gpgDiff * 15); 
-                
-                const scoreDiff = userScore - avgScore;
-                winProbability += (scoreDiff / 20);
-                
-                if (winProbability > 95) winProbability = 95;
-                if (winProbability < 5) winProbability = 5;
-
-                let wins = 0;
-                let losses = 0;
-                for(let i=0; i<12; i++) {
-                    const roll = Math.random() * 100;
-                    if (roll <= winProbability) {
-                        wins++;
-                    } else {
-                        losses++;
-                    }
-                }
-
-                results[div] = { w: wins, l: losses };
-                totalWins += wins;
-                totalLosses += losses;
+                userStats[div].ovr = userStats[div].ovr / 3;
             });
-            
-            summaryHTML += '</div>';
-            document.getElementById('roster-summary').innerHTML = summaryHTML;
 
-            document.getElementById('res-ccs').innerHTML = `CCS: <span style="float: right; color: var(--accent-gold); font-weight: bold;">${results.CCS.w} - ${results.CCS.l}</span>`;
-            document.getElementById('res-cpl').innerHTML = `CPL: <span style="float: right; color: var(--accent-gold); font-weight: bold;">${results.CPL.w} - ${results.CPL.l}</span>`;
-            document.getElementById('res-cas').innerHTML = `CAS: <span style="float: right; color: var(--accent-gold); font-weight: bold;">${results.CAS.w} - ${results.CAS.l}</span>`;
-            document.getElementById('res-cnl').innerHTML = `CNL: <span style="float: right; color: var(--accent-gold); font-weight: bold;">${results.CNL.w} - ${results.CNL.l}</span>`;
-            
-            document.getElementById('res-total').innerText = `${totalWins} - ${totalLosses}`;
-            
-            if (totalWins === 48) {
-                document.getElementById('res-total').style.color = '#00ffcc'; 
+            // Set user team identity header branding
+            const userOrgSafeLogo = (userDraftedOrgName || "Anglers").toLowerCase().replace(/\s+/g, '');
+            document.getElementById('match-user-org-logo').src = `logos/${userOrgSafeLogo}.png`;
+            document.getElementById('match-user-title').innerText = `${userDraftedOrgName || "YOUR TEAM"} TEAM`;
+
+            ['CCS', 'CPL', 'CAS', 'CNL'].forEach(div => {
+                const tabContent = document.getElementById(`tab-content-${div}`);
+                let tabHTML = '';
+                opponentSchedule[div].forEach(opp => {
+                    const safeLogo = opp.teamName.toLowerCase().replace(/\s+/g, '');
+                    const fallbackLogo = opp.org.toLowerCase().replace(/\s+/g, '');
+
+                    tabHTML += `
+                        <div class="roster-group" style="border-top: 4px solid ${orgColors[opp.org] || '#555'}">
+                            <div class="roster-group-title">
+                                <img src="logos/${safeLogo}.png" onerror="this.src='logos/${fallbackLogo}.png'; this.onerror=function(){this.src='logos/ccs.png';};">
+                                ${opp.season.toUpperCase()} ${opp.teamName}
+                            </div>
+                            <div class="roster-group-cards">
+                                ${generatePlayerCardHTML(opp.players[0], opp.org, opp.teamName)}
+                                ${generatePlayerCardHTML(opp.players[1], opp.org, opp.teamName)}
+                                ${generatePlayerCardHTML(opp.players[2], opp.org, opp.teamName)}
+                            </div>
+                        </div>
+                    `;
+                });
+                tabContent.innerHTML = tabHTML;
+            });
+
+            const titleEl = document.getElementById('sim-current-league');
+            const recordEl = document.getElementById('live-total-record');
+            const scoreBox = document.getElementById('live-match-score');
+            const userRosterBox = document.getElementById('match-user-roster');
+            const userTeamOvrBadge = document.querySelector('#match-user-team-ovr span');
+            const oppRosterBox = document.getElementById('match-opp-roster');
+            const oppTeamOvrBadge = document.querySelector('#match-opp-team-ovr span');
+            const oppLogo = document.getElementById('match-opp-logo');
+            const oppTitle = document.getElementById('match-opp-title');
+
+            let globalWins = 0;
+            let globalLosses = 0;
+
+            for (const div of ['CCS', 'CPL', 'CAS', 'CNL']) {
+                
+                let uTeamHTML = '';
+                userDraftedTeams[div].forEach(p => {
+                    const orgMatch = Object.keys(orgTeams).find(o => orgTeams[o].includes(p.orgname));
+                    uTeamHTML += generatePlayerCardHTML(p, orgMatch || "Anglers", p.orgname);
+                });
+                userRosterBox.innerHTML = uTeamHTML;
+                userTeamOvrBadge.innerText = Math.round(userStats[div].ovr);
+
+                for (let week = 0; week < 12; week++) {
+                    let opp = opponentSchedule[div][week];
+                    let uOVR = userStats[div].ovr;
+
+                    titleEl.innerHTML = `${div} <span>MATCH ${week + 1} / 12</span>${week === 11 ? ' &bull; RIVALRY' : ''}`;
+                    
+                    const safeOppLogo = opp.teamName.toLowerCase().replace(/\s+/g, '');
+                    const fallbackOppLogo = opp.org.toLowerCase().replace(/\s+/g, '');
+                    oppLogo.src = `logos/${safeOppLogo}.png`;
+                    oppLogo.onerror = function() { 
+                        this.src = `logos/${fallbackOppLogo}.png`; 
+                        this.onerror = function() { this.src='logos/ccs.png'; }; 
+                    };
+
+                    oppTitle.innerText = `${opp.season.toUpperCase()} ${opp.teamName}`;
+                    oppTeamOvrBadge.innerText = opp.teamOVR;
+                    
+                    let oppHTML = '';
+                    opp.players.forEach(p => { oppHTML += generatePlayerCardHTML(p, opp.org, opp.teamName); });
+                    oppRosterBox.innerHTML = oppHTML;
+
+                    let winProb = 50 + ((uOVR - opp.teamOVR) * 3);
+                    winProb = Math.max(5, Math.min(95, winProb));
+
+                    let uWins = 0;
+                    let oWins = 0;
+                    scoreBox.innerText = `0 - 0`;
+                    scoreBox.style.color = "var(--text-main)";
+                    scoreBox.style.borderColor = "var(--border-color)";
+
+                    await simDelay(600);
+
+                    // Bo5 Loop
+                    while(uWins < 3 && oWins < 3) {
+                        await simDelay(350); 
+                        let roll = Math.random() * 100;
+                        if(roll <= winProb) {
+                            uWins++;
+                        } else {
+                            oWins++;
+                        }
+                        scoreBox.innerText = `${uWins} - ${oWins}`;
+                    }
+
+                    if(uWins === 3) {
+                        scoreBox.style.color = "var(--accent-gold)";
+                        scoreBox.style.borderColor = "var(--accent-gold)";
+                        globalWins++;
+                    } else {
+                        scoreBox.style.color = "#ff4d4d";
+                        scoreBox.style.borderColor = "#ff4d4d";
+                        globalLosses++;
+                    }
+                    recordEl.innerText = `${globalWins} - ${globalLosses}`;
+
+                    await simDelay(800); 
+                }
             }
+
+            // End of season
+            titleEl.innerHTML = `SEASON COMPLETE`;
+            document.querySelector('.sim-speed-controls').style.display = 'none';
+            document.getElementById('view-rosters-btn').style.display = 'block';
+            document.getElementById('play-again-btn').style.display = 'block';
             
-            document.getElementById('results-modal').style.display = 'flex';
+            if(globalWins === 48) {
+                recordEl.style.color = '#00E59B';
+                recordEl.innerText = "48 - 0 (FLAWLESS)";
+            }
         });
+
+        // Tab Switching Logic in Modal
+        const tabs = document.querySelectorAll('.modal-tab-btn');
+        const contents = document.querySelectorAll('.modal-tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(`tab-content-${tab.getAttribute('data-tab')}`).classList.add('active');
+            });
+        });
+
+        document.getElementById('view-rosters-btn').addEventListener('click', () => {
+            document.getElementById('rosters-modal').style.display = 'flex';
+        });
+
     </script>
 </body>
 </html>
