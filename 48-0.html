@@ -336,6 +336,7 @@
         #pool-status {
             font-size: 0.9rem;
             color: var(--text-muted);
+            transition: 0.2s;
         }
 
         .filters-container {
@@ -482,6 +483,118 @@
             font-size: 0.85rem;
             font-weight: 700;
             cursor: default;
+        }
+
+        /* Perk Tooltip UI */
+        .perk-box {
+            background-color: var(--bg-base);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            cursor: help;
+        }
+        
+        .perk-box:hover {
+            border-color: var(--accent-gold);
+            background-color: rgba(212, 175, 55, 0.05);
+        }
+
+        .perk-box:hover .perk-tooltip {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .perk-title {
+            color: var(--text-main);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .perk-title span {
+            color: var(--accent-gold);
+        }
+
+        .perk-tooltip {
+            display: none;
+            opacity: 0;
+            position: absolute;
+            top: 110%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: var(--bg-card);
+            border: 1px solid var(--accent-gold);
+            padding: 15px;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+        
+        .perk-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            width: 10px;
+            height: 10px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--accent-gold);
+            border-left: 1px solid var(--accent-gold);
+        }
+
+        /* In-Draft Perk Hover Tag */
+        .draft-perk-tag {
+            font-size: 0.7rem;
+            color: var(--accent-gold);
+            margin-top: 5px;
+            font-weight: 800;
+            cursor: help;
+            position: relative;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .draft-perk-tag .perk-tooltip {
+            top: auto;
+            bottom: 140%;
+            left: 0;
+            transform: translateY(10px) translateX(0);
+            width: 280px;
+            text-align: left;
+            line-height: 1.4;
+            text-transform: none;
+            font-weight: normal;
+            color: var(--text-main);
+        }
+
+        .draft-perk-tag .perk-tooltip::before {
+            top: auto;
+            bottom: -6px;
+            left: 20px;
+            transform: rotate(225deg);
+        }
+
+        .draft-perk-tag:hover .perk-tooltip {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) translateX(0);
         }
 
         #roster-grid {
@@ -805,7 +918,7 @@
             margin-top: 5px;
         }
 
-        /* Playoff Roster View Adjustments (For all leagues/matches mode) */
+        /* Playoff Roster View Adjustments */
         .playoff-roster-view .sim-player-card {
             width: 100px;
             padding: 10px;
@@ -1213,6 +1326,13 @@
                 <div class="roster-tab">&#11042; Organization Roster</div>
             </div>
             
+            <!-- Active Perk Display Box -->
+            <div id="active-perk-container" class="perk-box">
+                <div class="perk-title">⭐ Franchise Perk: <span id="active-perk-name">None</span></div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">(Hover to view effect)</div>
+                <div class="perk-tooltip" id="active-perk-desc">Draft an Owner to reveal their organizational perk.</div>
+            </div>
+            
             <div id="roster-grid">
                 <!-- Franchise Slot -->
                 <div class="division-column franchise-col">
@@ -1387,6 +1507,10 @@
         let opponentSchedule = null;
         let userDraftedOrgName = null;
         let userDraftedOrgSeason = null;
+        let userDraftedFranOVR = 60; 
+        let graveyardMode = false;
+        let graveyardModeUsed = false;
+        let userDraftedOrgPerk = "Standard";
 
         let currentSpunSeason = null;
         let currentSpunOrg = null;
@@ -1398,6 +1522,7 @@
 
         let matchResults = { CCS: [], CPL: [], CAS: [], CNL: [] };
         let leagueRecords = { CCS: {w:0, l:0}, CPL: {w:0, l:0}, CAS: {w:0, l:0}, CNL: {w:0, l:0} };
+        let divMomentum = { CCS: 0, CPL: 0, CAS: 0, CNL: 0 }; 
 
         let leagueAverages = {
             CCS: { count: 0, totalOVR: 0, totalMMR: 0 },
@@ -1431,6 +1556,68 @@
             "Moose": "Howlers",
             "Blasters": "Pirates",
             "Pirates": "Blasters"
+        };
+        
+        const perkDescriptions = {
+            "Front-Runners": "+4 OVR in Games 1 & 2, -2 OVR penalty in Games 4 & 5.",
+            "The Poacher": "Allows you to select one elite player from any org per draft.",
+            "The Wall": "+15% win probability boost when facing series elimination.",
+            "The Snowball Effect": "Sweeping an opponent grants a stacking +2 OVR bonus (max +6) until a game is dropped.",
+            "Late Bloomers": "+5 OVR boost for Weeks 9-12 and Playoffs.",
+            "Top-Heavy Focus": "CCS and CPL receive +3 OVR, CAS and CNL suffer -2 OVR.",
+            "Giant Slayers": "+5 OVR boost when playing an opponent with a higher backend OVR.",
+            "The Artillery": "Win probability is uncapped (can hit 100%), but lowers the floor making upsets possible.",
+            "The Hot Start": "+4 OVR during Weeks 1-6, -3 OVR penalty during Weeks 7-12 and Playoffs.",
+            "Brand Loyalty": "+4 OVR chemistry boost if all 3 players share the same original organization.",
+            "The Underdog": "+5 OVR boost when playing an opponent with a higher backend OVR.",
+            "The Streak": "Consecutive series wins add a stacking +1 OVR (max +5), resets on loss.",
+            "Next Man Up": "Lowest OVR player receives a +5 OVR boost before team average.",
+            "The Pendulum": "Sweeping grants +3 OVR next week, getting swept inflicts -3 OVR.",
+            "Game 4 Grinders": "+15% win probability boost in Game 4 of any series.",
+            "The Wheel Dealer": "Trade for any player from another org's pool once per draft.",
+            "The Friendship Tax": "+3 OVR chemistry boost, but max win probability is capped at 80%.",
+            "Ironman Roster": "+1 OVR every 3 weeks, peaking at +4 OVR in the Playoffs.",
+            "The Gifted Run": "+6 OVR boost the second the Playoff bracket begins.",
+            "The Dynamic Duo": "Lowest-rated player ignored; team OVR is the average of the top two players.",
+            "The Coin Flip": "Randomly receives +5 OVR or -5 OVR at the start of every match.",
+            "The Centerpiece": "The highest OVR player in each division receives a +5 OVR boost.",
+            "The Frequent Flyer": "Trade for any player from another org's pool once per draft.",
+            "The Clique": "+4 OVR chemistry boost if all 3 players share the exact same original org.",
+            "The Graveyard": "After drafting 13 players, banish one to the Graveyard and spin to replace them.",
+            "The Second Wind": "-3 OVR penalty Weeks 1-6, +5 OVR boost Weeks 7-12 and Playoffs.",
+            "Going the Distance": "If series reaches Game 4, win probability is pushed closer to 50/50.",
+            "Moneyball": "Players below 70 OVR gain a hidden backend multiplier.",
+            "The Phenom": "Absolute lowest-rated OVR player on active roster receives a +10 OVR boost.",
+            "The Tank Commander": "Permanent -3 OVR penalty across all leagues.",
+            "The Surge": "+5 OVR boost for Weeks 9-12 and Playoffs.",
+            "Cinderella Story": "+5 OVR boost whenever facing an opponent with a higher OVR.",
+            "All or Nothing": "Win Game 1 gets +8 OVR rest of series; lose Game 1 gets -8 OVR penalty.",
+            "The Sacrificial Lamb": "CAS roster suffers -15 OVR penalty. CCS, CPL, and CNL receive +3 boost.",
+            "The Pep Talk": "If team loses Game 1, they receive +6 OVR boost for the rest of that match.",
+            "Ironclad Roster": "Chemistry builds over time. +1 backend OVR every 3 weeks, peaking at +4 OVR.",
+            "The Collapse": "Normal OVR Weeks 1-7. Suffers -4 OVR penalty during Weeks 8-12 and Playoffs.",
+            "The Standard": "Pure consistency. All rosters receive a permanent +3 OVR boost.",
+            "The Final Sprint": "Receives +5 OVR boost for Weeks 9-12 and Playoffs.",
+            "Star Power": "Highest OVR player on each 3-man roster receives +8 OVR before averaging.",
+            "Bottom-Up": "CAS and CNL receive +5 OVR boost. CCS and CPL suffer -2 OVR penalty.",
+            "Power of Friendship": "+4 OVR boost if all 3 players share the same original organization.",
+            "The CPL Kings": "CPL roster receives +6 OVR boost. CCS, CAS, and CNL receive +2 boost."
+        };
+
+        const historicalPerks = {
+            s1: { "Samurai": "Front-Runners", "Ninjas": "The Poacher", "Flyers": "The Wall", "Anglers": "The Snowball Effect", "Stars": "Late Bloomers", "Shockwave": "Top-Heavy Focus", "Pirates": "Giant Slayers", "Blasters": "The Artillery" },
+            s2: { "Samurai": "The Hot Start", "Ninjas": "Brand Loyalty", "Flyers": "The Underdog", "Anglers": "The Streak", "Stars": "Next Man Up", "Shockwave": "The Pendulum", "Pirates": "Game 4 Grinders", "Blasters": "The Wheel Dealer" },
+            s3: { "Samurai": "The Friendship Tax", "Ninjas": "Brand Loyalty", "Flyers": "Ironman Roster", "Anglers": "The Gifted Run", "Stars": "The Dynamic Duo", "Shockwave": "The Coin Flip", "Pirates": "The Centerpiece", "Blasters": "The Frequent Flyer", "Vipers": "The Clique", "Zebras": "The Graveyard", "Moose": "The Second Wind", "Howlers": "The Second Wind" },
+            s4: { "Samurai": "Going the Distance", "Ninjas": "Moneyball", "Flyers": "The Phenom", "Anglers": "The Tank Commander", "Stars": "The Pendulum", "Shockwave": "The Surge", "Pirates": "Cinderella Story", "Blasters": "The Wheel Dealer", "Vipers": "The Clique", "Zebras": "The Graveyard", "Moose": "All or Nothing", "Howlers": "The Clique" },
+            s5: { "Samurai": "The Sacrificial Lamb", "Ninjas": "Cinderella Story", "Flyers": "The Pep Talk", "Anglers": "Ironclad Roster", "Stars": "The Collapse", "Shockwave": "The Standard", "Pirates": "The Final Sprint", "Blasters": "Star Power", "Vipers": "Bottom-Up", "Zebras": "The Graveyard", "Moose": "Power of Friendship", "Howlers": "The CPL Kings" }
+        };
+        
+        const historicalOwners = {
+            s1: { "Samurai": "Dr Scrawny", "Ninjas": "Loomeister", "Flyers": "Nate507", "Anglers": "Ren", "Stars": "ZHV", "Shockwave": "Sports", "Pirates": "Flozz", "Blasters": "Ic3d" },
+            s2: { "Samurai": "Timbo", "Ninjas": "David", "Flyers": "Nate507", "Anglers": "Ren", "Stars": "ZHV", "Shockwave": "Sports", "Pirates": "Nava", "Blasters": "Panda" },
+            s3: { "Samurai": "Splashy", "Ninjas": "David", "Flyers": "Nate507", "Anglers": "Burner", "Stars": "ZHV", "Shockwave": "Sports", "Pirates": "Loomeister", "Blasters": "Panda", "Vipers": "Midwest", "Zebras": "Penguin", "Moose": "Trout", "Howlers": "Sneak" },
+            s4: { "Samurai": "Solurr", "Ninjas": "David", "Flyers": "Nate507", "Anglers": "Burner", "Stars": "ZHV", "Shockwave": "Sports", "Pirates": "Loomeister", "Blasters": "Panda", "Vipers": "Ren", "Zebras": "Penguin", "Moose": "Trout", "Howlers": "Sneak" },
+            s5: { "Samurai": "Solurr", "Ninjas": "Souls", "Flyers": "Nate507", "Anglers": "Burner", "Stars": "Ale", "Shockwave": "Sports", "Pirates": "Loomeister", "Blasters": "Dyloh", "Vipers": "Ren", "Zebras": "Penguin", "Moose": "Trout", "Howlers": "Kaos" }
         };
 
         const playoffDivisions = {
@@ -1529,9 +1716,16 @@
             userDraftedTeams = { CCS: [], CPL: [], CAS: [], CNL: [] };
             userDraftedOrgName = null;
             userDraftedOrgSeason = null;
+            userDraftedFranOVR = 60; 
+            graveyardMode = false;
+            graveyardModeUsed = false;
+            userDraftedOrgPerk = "Standard";
+            divMomentum = { CCS: 0, CPL: 0, CAS: 0, CNL: 0 };
             
             respinSeasonUsed = false;
             respinOrgUsed = false;
+            
+            document.getElementById('active-perk-container').style.display = 'none';
 
             rosterSlots.forEach(slot => {
                 const isFranchise = slot.getAttribute('data-div') === 'FRAN';
@@ -1539,6 +1733,7 @@
                 slot.classList.remove('filled');
                 slot.style.borderColor = 'var(--border-color)';
                 slot.style.boxShadow = 'none';
+                slot.removeAttribute('data-playername');
             });
 
             if (currentGameMode === 'cap') {
@@ -1555,6 +1750,7 @@
 
             draftPoolContainer.innerHTML = '';
             poolStatus.innerText = '0 players available';
+            poolStatus.style.color = 'var(--text-muted)';
             filtersContainer.style.display = 'none';
             
             badgeOrg.innerText = '?';
@@ -1582,8 +1778,20 @@
             picksTracker.innerText = total;
             
             if (total === 13) {
-                document.querySelector('.draft-section').style.display = 'none';
-                document.getElementById('sim-controls').style.display = 'block';
+                if (userDraftedOrgPerk === 'The Graveyard' && !graveyardModeUsed) {
+                    graveyardMode = true;
+                    poolStatus.innerText = "GRAVEYARD PHASE: Click any drafted player on the right to banish them!";
+                    poolStatus.style.color = "#ff4444";
+                    document.querySelector('.draft-section').style.display = 'flex';
+                    draftPoolContainer.innerHTML = '';
+                    filtersContainer.style.display = 'none';
+                    spinBtn.disabled = true;
+                    respinSeasonBtn.disabled = true;
+                    respinOrgBtn.disabled = true;
+                } else {
+                    document.querySelector('.draft-section').style.display = 'none';
+                    document.getElementById('sim-controls').style.display = 'block';
+                }
             }
         }
 
@@ -1639,6 +1847,7 @@
             draftPoolContainer.innerHTML = '';
             filtersContainer.style.display = 'none';
             poolStatus.innerText = 'Spinning...';
+            poolStatus.style.color = 'var(--text-muted)';
             orgLogo.classList.add('spinning');
             orgLogo.style.display = 'block';
 
@@ -1705,7 +1914,9 @@
                         const pLeague = (row.League || row.league || 'CNL').toUpperCase().trim();
                         const isS1CPL = (row.season.toLowerCase() === 's1' && pLeague === 'CPL');
                         
-                        return row.season.toLowerCase() === finalSeason && belongsToOrg && (gp >= 10 || isS1CPL) && !pickedPlayers.has(row.playername);
+                        const isNotOwner = pLeague !== 'FRAN';
+                        
+                        return row.season.toLowerCase() === finalSeason && belongsToOrg && (gp >= 10 || isS1CPL) && !pickedPlayers.has(row.playername) && isNotOwner;
                     });
 
                     availablePlayers.sort((a, b) => {
@@ -1718,8 +1929,14 @@
                     
                     isSpinning = false;
                     spinBtn.disabled = false;
-                    respinSeasonBtn.disabled = respinSeasonUsed;
-                    respinOrgBtn.disabled = respinOrgUsed;
+                    
+                    if (!graveyardModeUsed) {
+                        respinSeasonBtn.disabled = respinSeasonUsed;
+                        respinOrgBtn.disabled = respinOrgUsed;
+                    } else {
+                        respinSeasonBtn.disabled = true;
+                        respinOrgBtn.disabled = true;
+                    }
                 }
             }, spinSpeedUi);
         }
@@ -1739,19 +1956,38 @@
                 
                 const franColor = orgColors[currentSpunOrg] || '#D4AF37';
                 
-                let franData = database.find(r => r.orgname === currentSpunOrg && r.season.toLowerCase() === currentSpunSeason && (r.League || '').toUpperCase().trim() === 'FRAN');
-                let ownerName = franData ? franData.playername : `${currentSpunOrg} Owner`;
-                let franOVR = franData ? parseInt(franData.OVR || franData.Overall || 60, 10) : 'ORG';
+                let seasonKey = currentSpunSeason.toLowerCase();
+                let ownerName = historicalOwners[seasonKey] && historicalOwners[seasonKey][currentSpunOrg] ? historicalOwners[seasonKey][currentSpunOrg] : `${currentSpunOrg} Owner`;
+                let assignedPerk = historicalPerks[seasonKey] && historicalPerks[seasonKey][currentSpunOrg] ? historicalPerks[seasonKey][currentSpunOrg] : "Standard";
+                let perkDesc = perkDescriptions[assignedPerk] || "Standard organizational operations.";
+
+                // Still fetch OVR from sheet if exists, else 60
+                let franData = database.find(r => 
+                    r.orgname === currentSpunOrg && 
+                    (r.season || '').toLowerCase().trim() === currentSpunSeason.toLowerCase().trim() &&
+                    (r.League || r.league || '').toUpperCase().trim() === 'FRAN'
+                );
+                if (!franData) {
+                    franData = database.find(r => 
+                        r.orgname === currentSpunOrg && 
+                        (r.League || r.league || '').toUpperCase().trim() === 'FRAN'
+                    );
+                }
+                let franOVR = franData ? parseInt(franData.OVR || franData.Overall || 60, 10) : 60;
 
                 franCard.innerHTML = `
-                    <div class="player-info">
+                    <div class="player-info" style="position: relative; overflow: visible;">
                         <div class="player-name">${ownerName}</div>
-                        <div class="player-sub">FRONT OFFICE &bull; ${currentSpunOrg}</div>
+                        <div class="player-sub">FRONT OFFICE &bull; ${currentSpunOrg} &bull; ${currentSpunSeason.toUpperCase()}</div>
+                        <div class="draft-perk-tag">
+                            ⭐ PERK: ${assignedPerk.toUpperCase()} (Hover)
+                            <div class="perk-tooltip">${perkDesc}</div>
+                        </div>
                     </div>
                     <div class="player-stats-row">
                         <div class="stat-block">
-                            <span class="stat-val ovr-val" style="color: ${franColor}; font-size: 1.1rem; font-style: italic;">${franOVR}</span>
-                            <span class="stat-label">OVR</span>
+                            <span class="stat-val ovr-val" style="color: ${franColor}; font-size: 0.85rem; font-style: italic; white-space: nowrap;">${assignedPerk}</span>
+                            <span class="stat-label">PERK</span>
                         </div>
                     </div>
                 `;
@@ -1763,6 +1999,8 @@
                     League: 'FRAN',
                     'League mmr': 0,
                     OVR: franOVR,
+                    Perk: assignedPerk,
+                    PerkDesc: perkDesc,
                     isFranchise: true
                 };
                 
@@ -1825,10 +2063,44 @@
 
         rosterSlots.forEach(slot => {
             slot.addEventListener('click', () => {
+                const slotDiv = slot.getAttribute('data-div');
+                
+                if (graveyardMode) {
+                    if (!slot.classList.contains('filled')) return;
+                    if (slotDiv === 'FRAN') { alert("You cannot banish the Owner to the Graveyard!"); return; }
+                    
+                    const pName = slot.getAttribute('data-playername');
+                    pickedPlayers.delete(pName);
+                    userDraftedTeams[slotDiv] = userDraftedTeams[slotDiv].filter(p => p.playername !== pName);
+                    
+                    slot.classList.remove('filled');
+                    slot.style.borderColor = 'var(--border-color)';
+                    slot.style.boxShadow = 'none';
+                    slot.innerHTML = `Player`;
+                    slot.removeAttribute('data-playername');
+
+                    if (currentGameMode === 'cap') {
+                        let updatedMMR = 0;
+                        userDraftedTeams[slotDiv].forEach(p => { updatedMMR += parseFloat(p['League mmr']) || 0; });
+                        let remaining = leagueCaps[slotDiv] - Math.round(updatedMMR);
+                        document.getElementById(`cap-${slotDiv.toLowerCase()}`).innerHTML = `Cap: ${Math.round(updatedMMR)} / ${leagueCaps[slotDiv]} <span style="color: var(--accent-gold);">(${remaining} left)</span>`;
+                    }
+
+                    graveyardMode = false;
+                    graveyardModeUsed = true;
+                    poolStatus.innerText = "Player Banished! Spin one last time to replace them.";
+                    poolStatus.style.color = "var(--text-muted)";
+                    
+                    spinBtn.disabled = false;
+                    respinSeasonBtn.disabled = true;
+                    respinOrgBtn.disabled = true;
+                    updatePicksTracker(); 
+                    return;
+                }
+
                 if (!activePlayerToPlace) return; 
                 if (slot.classList.contains('filled')) return; 
 
-                const slotDiv = slot.getAttribute('data-div');
                 const slotLevel = leagueLevels[slotDiv];
 
                 // Check Franchise Assignment
@@ -1838,6 +2110,8 @@
                     franchiseDrafted = true;
                     userDraftedOrgName = activePlayerToPlace.orgname;
                     userDraftedOrgSeason = activePlayerToPlace.season;
+                    userDraftedFranOVR = parseInt(activePlayerToPlace.OVR, 10) || 60;
+                    userDraftedOrgPerk = activePlayerToPlace.Perk;
                     
                     const color = orgColors[userDraftedOrgName] || '#D4AF37';
                     const logoSafe = userDraftedOrgName.toLowerCase().replace(/\s+/g, '');
@@ -1851,10 +2125,18 @@
                             <img src="logos/${logoSafe}.png" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.src='logos/ccs.png'">
                             <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
                                 <div style="font-weight: 800; font-size: 1.1rem; color: var(--text-main); line-height: 1;">${activePlayerToPlace.playername}</div>
-                                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">${userDraftedOrgSeason.toUpperCase()} Front Office &bull; ${activePlayerToPlace.OVR} OVR</div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">${userDraftedOrgSeason.toUpperCase()} Front Office &bull; ${activePlayerToPlace.Perk}</div>
                             </div>
                         </div>
                     `;
+                    
+                    const activePerkContainer = document.getElementById('active-perk-container');
+                    const activePerkName = document.getElementById('active-perk-name');
+                    const activePerkDesc = document.getElementById('active-perk-desc');
+                    
+                    activePerkContainer.style.display = 'flex';
+                    activePerkName.innerText = activePlayerToPlace.Perk;
+                    activePerkDesc.innerText = activePlayerToPlace.PerkDesc || 'Standard organizational operations.';
                     
                     activePlayerToPlace = null;
                     activePlayerLeagueLevel = null;
@@ -1890,6 +2172,7 @@
 
                 slot.classList.add('filled');
                 slot.style.borderColor = orgColor;
+                slot.setAttribute('data-playername', p.playername);
                 
                 slot.innerHTML = `
                     <div class="slot-card-content">
@@ -1936,7 +2219,6 @@
             await new Promise(r => setTimeout(r, ms / simSpeed));
         }
 
-        // New League-Specific OVR Calculators
         function calculateOrgLeagueOVR(orgName, league) {
             let seasonsToTry = ["s5", "s4", "s3", "s2", "s1"];
             const expansions = ["Vipers", "Howlers", "Moose", "Zebras"];
@@ -1954,11 +2236,10 @@
                 if (players.length >= 3) {
                     let sum = 0;
                     players.slice(0,3).forEach(p => sum += parseInt(p.OVR || 60, 10));
-                    return { ovr: Math.round(sum / 3), players: players.slice(0,3) };
+                    return { ovr: Math.round(sum / 3), simOvr: sum / 3, players: players.slice(0,3) };
                 }
             }
             
-            // Fallback if full team not found
             let fallback = database.filter(row => {
                 const belongsToOrg = orgTeams[orgName].includes(row.orgname);
                 const pLeague = (row.League || row.league || 'CNL').toUpperCase().trim();
@@ -1967,21 +2248,111 @@
             
             let sum = 0;
             fallback.forEach(p => sum += parseInt(p.OVR || 60, 10));
-            return { ovr: fallback.length > 0 ? Math.round(sum / fallback.length) : 75, players: fallback };
+            let finalOvr = fallback.length > 0 ? sum / fallback.length : 75;
+            return { ovr: Math.round(finalOvr), simOvr: finalOvr, players: fallback };
         }
 
-        function calculateUserOrgLeagueOVR(league) {
-            let totalOvr = 0;
-            let allPlayers = [];
+        // Updated User Calculator to process all dynamic Organizational Perks
+        function calculateUserOrgLeagueOVR(league, week = 1, isPlayoffs = false) {
+            let allPlayers = [...userDraftedTeams[league]];
             const slotLevel = leagueLevels[league];
-            userDraftedTeams[league].forEach(p => {
+            let teamOvrSum = 0;
+            let highestIndex = 0;
+            let highestOvr = 0;
+            let lowestIndex = 0;
+            let lowestOvr = 999;
+
+            let adjustedOVRs = allPlayers.map((p, i) => {
                 const pLeague = (p.League || p.league || 'CNL').toUpperCase().trim();
                 const pLevel = leagueLevels[pLeague] || 4; 
-                const multiplier = 1 - ((pLevel - slotLevel) * 0.25); 
-                totalOvr += (parseInt(p.OVR || 60, 10) * multiplier);
-                allPlayers.push(p);
+                const multiplier = 1 - (Math.max(0, pLevel - slotLevel) * 0.25); 
+                let pOVR = parseInt(p.OVR || 60, 10) * multiplier;
+                
+                if (userDraftedOrgPerk === "Moneyball" && pOVR < 70) {
+                    pOVR += (70 - pOVR) * 1.5;
+                }
+
+                if (pOVR > highestOvr) { highestOvr = pOVR; highestIndex = i; }
+                if (pOVR < lowestOvr) { lowestOvr = pOVR; lowestIndex = i; }
+                return pOVR;
             });
-            return { ovr: Math.round(totalOvr / 3), players: allPlayers };
+
+            if (userDraftedOrgPerk === 'Star Power' && adjustedOVRs.length > 0) {
+                adjustedOVRs[highestIndex] += 8;
+            }
+            if (userDraftedOrgPerk === 'The Centerpiece' && adjustedOVRs.length > 0) {
+                adjustedOVRs[highestIndex] += 5;
+            }
+            if (userDraftedOrgPerk === 'Next Man Up' && adjustedOVRs.length > 0) {
+                adjustedOVRs[lowestIndex] += 5;
+            }
+            if (userDraftedOrgPerk === 'The Phenom' && adjustedOVRs.length > 0) {
+                adjustedOVRs[lowestIndex] += 10;
+            }
+
+            if (userDraftedOrgPerk === 'The Dynamic Duo' && adjustedOVRs.length === 3) {
+                let sumWithoutLowest = adjustedOVRs[0] + adjustedOVRs[1] + adjustedOVRs[2] - adjustedOVRs[lowestIndex];
+                teamOvrSum = sumWithoutLowest;
+            } else {
+                adjustedOVRs.forEach(val => teamOvrSum += val);
+            }
+            
+            let divisor = (userDraftedOrgPerk === 'The Dynamic Duo' && adjustedOVRs.length === 3) ? 2 : (allPlayers.length > 0 ? allPlayers.length : 1);
+            let baseOvr = teamOvrSum / divisor;
+            let simOvr = baseOvr;
+
+            // Apply specific organizational backend boosts
+            if (userDraftedOrgPerk === 'The CPL Kings') { simOvr += (league === 'CPL' ? 6 : 2); }
+            if (userDraftedOrgPerk === 'The Standard') { simOvr += 3; }
+            if (userDraftedOrgPerk === 'Bottom-Up') { simOvr += (league === 'CAS' || league === 'CNL' ? 5 : -2); }
+            if (userDraftedOrgPerk === 'Top-Heavy Focus') { simOvr += (league === 'CCS' || league === 'CPL' ? 3 : -2); }
+            if (userDraftedOrgPerk === 'The Sacrificial Lamb') { simOvr += (league === 'CAS' ? -15 : 3); }
+            if (userDraftedOrgPerk === 'The Tank Commander') { simOvr -= 3; }
+            
+            if (userDraftedOrgPerk === 'The Coin Flip') {
+                simOvr += (Math.random() > 0.5 ? 5 : -5);
+            }
+
+            if (userDraftedOrgPerk === 'Power of Friendship' || userDraftedOrgPerk === 'The Clique' || userDraftedOrgPerk === 'Brand Loyalty') {
+                if (allPlayers.length === 3 && allPlayers[0].orgname === allPlayers[1].orgname && allPlayers[1].orgname === allPlayers[2].orgname) {
+                    simOvr += 4;
+                }
+            }
+            
+            if (userDraftedOrgPerk === 'The Collapse') {
+                if (isPlayoffs || week >= 8) simOvr -= 4;
+            }
+            
+            if (userDraftedOrgPerk === 'The Final Sprint' || userDraftedOrgPerk === 'The Surge' || userDraftedOrgPerk === 'Late Bloomers') {
+                if (isPlayoffs || week >= 9) simOvr += 5;
+            }
+
+            if (userDraftedOrgPerk === 'The Second Wind') {
+                if (isPlayoffs || week >= 7) simOvr += 5;
+                else simOvr -= 3;
+            }
+
+            if (userDraftedOrgPerk === 'The Hot Start') {
+                if (isPlayoffs || week >= 7) simOvr -= 3;
+                else simOvr += 4;
+            }
+            
+            if (userDraftedOrgPerk === 'Ironclad Roster' || userDraftedOrgPerk === 'Ironman Roster') {
+                if (isPlayoffs) simOvr += 4;
+                else if (week >= 10) simOvr += 3;
+                else if (week >= 7) simOvr += 2;
+                else if (week >= 4) simOvr += 1;
+            }
+
+            if (userDraftedOrgPerk === 'The Gifted Run' && isPlayoffs) {
+                simOvr += 6;
+            }
+
+            return { 
+                ovr: Math.round(baseOvr), // Visual OVR stays pure
+                simOvr: simOvr, // Hidden Simulation Boost
+                players: allPlayers 
+            };
         }
 
         function generateOpponentSchedule(userOrg) {
@@ -2053,7 +2424,8 @@
                         teamName: exactTeamName,
                         season: chosenSeason,
                         players: validPlayers,
-                        teamOVR: Math.round(oppOVR)
+                        teamOVR: Math.round(oppOVR),
+                        simOVR: oppOVR
                     });
                 });
             });
@@ -2157,12 +2529,6 @@
         async function startRegularSeason() {
             opponentSchedule = generateOpponentSchedule(userDraftedOrgName || "Anglers");
 
-            let userStats = { CCS: {ovr:0}, CPL: {ovr:0}, CAS: {ovr:0}, CNL: {ovr:0} };
-            ['CCS', 'CPL', 'CAS', 'CNL'].forEach(div => {
-                let teamData = calculateUserOrgLeagueOVR(div);
-                userStats[div].ovr = teamData.ovr;
-            });
-
             const userOrgSafeLogo = (userDraftedOrgName || "Anglers").toLowerCase().replace(/\s+/g, '');
             document.getElementById('match-user-org-logo').src = `logos/${userOrgSafeLogo}.png`;
             document.getElementById('match-user-title').innerText = `${userDraftedOrgName || "YOUR TEAM"} TEAM`;
@@ -2181,18 +2547,19 @@
             let globalLosses = 0;
 
             for (const div of ['CCS', 'CPL', 'CAS', 'CNL']) {
-                
                 let uTeamHTML = '';
                 userDraftedTeams[div].forEach(p => {
                     const orgMatch = Object.keys(orgTeams).find(o => orgTeams[o].includes(p.orgname));
                     uTeamHTML += generatePlayerCardHTML(p, orgMatch || userDraftedOrgName || "Anglers", p.orgname);
                 });
                 userRosterBox.innerHTML = uTeamHTML;
-                userTeamOvrBadge.innerText = userStats[div].ovr;
 
                 for (let week = 0; week < 12; week++) {
+                    let teamData = calculateUserOrgLeagueOVR(div, week + 1, false);
+                    let baseU_OVR = teamData.simOvr + divMomentum[div]; 
+                    userTeamOvrBadge.innerText = teamData.ovr; 
+
                     let opp = opponentSchedule[div][week];
-                    let uOVR = userStats[div].ovr;
 
                     titleEl.innerHTML = `${div} <span>MATCH ${week + 1} / 12</span>${week === 11 ? ' &bull; RIVALRY' : ''}`;
                     
@@ -2211,8 +2578,14 @@
                     opp.players.forEach(p => { oppHTML += generatePlayerCardHTML(p, opp.org, opp.teamName); });
                     oppRosterBox.innerHTML = oppHTML;
 
-                    let winProb = 50 + ((uOVR - opp.teamOVR) * 3);
-                    winProb = Math.max(5, Math.min(95, winProb));
+                    if (userDraftedOrgPerk === 'Cinderella Story' || userDraftedOrgPerk === 'Giant Slayers' || userDraftedOrgPerk === 'The Underdog') {
+                        if (baseU_OVR < opp.simOVR) baseU_OVR += 5;
+                    }
+
+                    let winProb = 50 + ((baseU_OVR - opp.simOVR) * 4.0);
+                    let minCap = userDraftedOrgPerk === 'The Artillery' ? 0 : 2;
+                    let maxCap = userDraftedOrgPerk === 'The Friendship Tax' ? 80 : (userDraftedOrgPerk === 'The Artillery' ? 100 : 96);
+                    winProb = Math.max(minCap, Math.min(maxCap, winProb));
 
                     let uWins = 0, oWins = 0;
                     scoreBox.innerText = `0 - 0`;
@@ -2221,10 +2594,35 @@
 
                     await simDelay(600);
 
+                    let wonGame1 = false;
                     while(uWins < 3 && oWins < 3) {
+                        let gameNum = uWins + oWins + 1;
+                        let currentWinProb = winProb;
+                        
+                        if (userDraftedOrgPerk === 'The Pep Talk' && gameNum > 1 && !wonGame1) {
+                            currentWinProb = 50 + (((baseU_OVR + 6) - opp.simOVR) * 4.0);
+                        }
+                        if (userDraftedOrgPerk === 'Front-Runners') {
+                            if (gameNum <= 2) currentWinProb = 50 + (((baseU_OVR + 4) - opp.simOVR) * 4.0);
+                            else if (gameNum >= 4) currentWinProb = 50 + (((baseU_OVR - 2) - opp.simOVR) * 4.0);
+                        }
+                        if (userDraftedOrgPerk === 'Game 4 Grinders' && gameNum === 4) {
+                            currentWinProb += 15;
+                        }
+                        if (userDraftedOrgPerk === 'Going the Distance' && gameNum >= 4) {
+                            currentWinProb = 50 + (currentWinProb - 50) * 0.5;
+                        }
+                        if (userDraftedOrgPerk === 'All or Nothing' && gameNum > 1) {
+                            if (wonGame1) currentWinProb = 50 + (((baseU_OVR + 8) - opp.simOVR) * 4.0);
+                            else currentWinProb = 50 + (((baseU_OVR - 8) - opp.simOVR) * 4.0);
+                        }
+
+                        currentWinProb = Math.max(minCap, Math.min(maxCap, currentWinProb));
+
                         await simDelay(350); 
-                        let roll = Math.random() * 100;
-                        if(roll <= winProb) { uWins++; } else { oWins++; }
+                        if (Math.random() * 100 <= currentWinProb) uWins++; else oWins++;
+                        
+                        if (gameNum === 1 && uWins === 1) wonGame1 = true;
                         scoreBox.innerText = `${uWins} - ${oWins}`;
                     }
 
@@ -2233,11 +2631,19 @@
                         scoreBox.style.borderColor = "var(--accent-gold)";
                         globalWins++;
                         leagueRecords[div].w++;
+                        
+                        if (userDraftedOrgPerk === 'The Snowball Effect') divMomentum[div] = Math.min(6, divMomentum[div] + 2);
+                        if (userDraftedOrgPerk === 'The Streak') divMomentum[div] = Math.min(5, divMomentum[div] + 1);
+                        if (userDraftedOrgPerk === 'The Pendulum' && oWins === 0) divMomentum[div] = 3;
                     } else {
                         scoreBox.style.color = "#ff4d4d";
                         scoreBox.style.borderColor = "#ff4d4d";
                         globalLosses++;
                         leagueRecords[div].l++;
+                        
+                        if (userDraftedOrgPerk === 'The Snowball Effect') divMomentum[div] = 0;
+                        if (userDraftedOrgPerk === 'The Streak') divMomentum[div] = 0;
+                        if (userDraftedOrgPerk === 'The Pendulum' && uWins === 0) divMomentum[div] = -3;
                     }
                     recordEl.innerText = `${globalWins} - ${globalLosses}`;
                     
@@ -2256,6 +2662,12 @@
                     await simDelay(800); 
                 }
             }
+
+            // AUTO-RESET SIMULATION SPEED WHEN REGULAR SEASON ENDS
+            skipSim = false;
+            simSpeed = 1;
+            document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.speed-btn[data-speed="1"]').classList.add('active');
 
             populateSummaryScreen();
             populateRostersScreen();
@@ -2319,12 +2731,13 @@
                 finalInt.sort(() => Math.random() - 0.5);
 
                 const buildTeamObj = (org, seed) => {
-                    const teamData = org === userOrg ? calculateUserOrgLeagueOVR(league) : calculateOrgLeagueOVR(org, league);
+                    const teamData = org === userOrg ? calculateUserOrgLeagueOVR(league, 13, true) : calculateOrgLeagueOVR(org, league);
                     return {
                         org: org,
                         seed: seed,
                         isUser: org === userOrg,
-                        ovr: teamData.ovr,
+                        ovr: teamData.ovr, // Visual 
+                        simOvr: teamData.simOvr, // Simulation Backend
                         players: teamData.players,
                         logo: org.toLowerCase().replace(/\s+/g, '')
                     };
@@ -2347,7 +2760,6 @@
                 };
             });
 
-            // Set up playoff tab listeners
             document.querySelectorAll('.playoff-tab-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     document.querySelectorAll('.playoff-tab-btn').forEach(b => b.classList.remove('active'));
@@ -2439,7 +2851,6 @@
             const btn = document.getElementById('bracket-advance-btn');
             btn.disabled = true;
             
-            // Collect all matches to simulate across all 4 leagues
             let allMatchesToSim = [];
             ['CCS', 'CPL', 'CAS', 'CNL'].forEach(league => {
                 let matches = currentPlayoffRound === 1 ? playoffData[league].R1 : currentPlayoffRound === 2 ? playoffData[league].R2 : playoffData[league].R3;
@@ -2448,7 +2859,6 @@
                 });
             });
             
-            // --- Transition to Simulation Screen ---
             document.getElementById('playoff-bracket-screen').style.display = 'none';
             document.getElementById('simulation-screen').style.display = 'flex';
             document.getElementById('view-summary-btn').style.display = 'none';
@@ -2485,7 +2895,6 @@
                 titleEl.innerHTML = `${activeLeague} ${currentRoundName} <br><span style="font-size: 1.2rem;">MATCH ${i + 1} / ${allMatchesToSim.length}</span>`;
                 document.querySelector('.bo5-text').innerText = `BEST OF ${m.bo}`;
                 
-                // Populate Team 1 (Left)
                 userLogo.src = `logos/${m.t1.logo}.png`;
                 userLogo.onerror = function() { this.src='logos/ccs.png'; };
                 userTitle.innerText = `${m.t1.seed} ${m.t1.org}`;
@@ -2498,7 +2907,6 @@
                 });
                 userRosterBox.innerHTML = t1HTML;
 
-                // Populate Team 2 (Right)
                 oppLogo.src = `logos/${m.t2.logo}.png`;
                 oppLogo.onerror = function() { this.src='logos/ccs.png'; };
                 oppTitle.innerText = `${m.t2.seed} ${m.t2.org}`;
@@ -2511,8 +2919,15 @@
                 });
                 oppRosterBox.innerHTML = t2HTML;
 
-                let winProb = 50 + ((m.t1.ovr - m.t2.ovr) * 3);
-                winProb = Math.max(10, Math.min(90, winProb));
+                let t1SimOvr = m.t1.simOvr;
+                let t2SimOvr = m.t2.simOvr;
+                if (m.t1.isUser && (userDraftedOrgPerk === 'Cinderella Story' || userDraftedOrgPerk === 'Giant Slayers' || userDraftedOrgPerk === 'The Underdog') && t1SimOvr < t2SimOvr) t1SimOvr += 5;
+                if (m.t2.isUser && (userDraftedOrgPerk === 'Cinderella Story' || userDraftedOrgPerk === 'Giant Slayers' || userDraftedOrgPerk === 'The Underdog') && t2SimOvr < t1SimOvr) t2SimOvr += 5;
+
+                let winProb = 50 + ((t1SimOvr - t2SimOvr) * 4.0);
+                let minCap = userDraftedOrgPerk === 'The Artillery' && (m.t1.isUser || m.t2.isUser) ? 0 : 2;
+                let maxCap = userDraftedOrgPerk === 'The Friendship Tax' && (m.t1.isUser || m.t2.isUser) ? 80 : (userDraftedOrgPerk === 'The Artillery' && (m.t1.isUser || m.t2.isUser) ? 100 : 96);
+                winProb = Math.max(minCap, Math.min(maxCap, winProb));
                 
                 let w1 = 0, w2 = 0;
                 let needed = m.bo === 5 ? 3 : 4;
@@ -2524,8 +2939,38 @@
                 await simDelay(800);
                 
                 while (w1 < needed && w2 < needed) {
+                    let gameNum = w1 + w2 + 1;
+                    let currentWinProb = winProb;
+
+                    if (m.t1.isUser && userDraftedOrgPerk === 'The Pep Talk' && w2 > 0 && w1 === 0) {
+                        currentWinProb = 50 + (((t1SimOvr + 6) - t2SimOvr) * 4.0);
+                    }
+                    if (m.t2.isUser && userDraftedOrgPerk === 'The Pep Talk' && w1 > 0 && w2 === 0) {
+                        let flippedProb = 50 + (((t2SimOvr + 6) - t1SimOvr) * 4.0);
+                        currentWinProb = 100 - flippedProb;
+                    }
+
+                    if (m.t1.isUser && userDraftedOrgPerk === 'The Wall' && (w2 === needed - 1)) {
+                        currentWinProb += 15;
+                    }
+
+                    if (m.t1.isUser && userDraftedOrgPerk === 'Front-Runners') {
+                        if (gameNum <= 2) currentWinProb = 50 + (((t1SimOvr + 4) - t2SimOvr) * 4.0);
+                        else if (gameNum >= 4) currentWinProb = 50 + (((t1SimOvr - 2) - t2SimOvr) * 4.0);
+                    }
+
+                    if (m.t1.isUser && userDraftedOrgPerk === 'Game 4 Grinders' && gameNum === 4) {
+                        currentWinProb += 15;
+                    }
+
+                    if (m.t1.isUser && userDraftedOrgPerk === 'Going the Distance' && gameNum >= 4) {
+                        currentWinProb = 50 + (currentWinProb - 50) * 0.5;
+                    }
+
+                    currentWinProb = Math.max(minCap, Math.min(maxCap, currentWinProb));
+
                     await simDelay(300);
-                    if (Math.random() * 100 <= winProb) w1++; else w2++;
+                    if (Math.random() * 100 <= currentWinProb) w1++; else w2++;
                     scoreBox.innerText = `${w1} - ${w2}`;
                 }
                 
@@ -2543,14 +2988,12 @@
                 await simDelay(1000);
             }
 
-            // --- Return to Bracket Screen ---
             document.getElementById('simulation-screen').style.display = 'none';
             document.getElementById('playoff-bracket-screen').style.display = 'flex';
             recordEl.style.display = 'block'; 
             userRosterBox.classList.remove('playoff-roster-view');
             oppRosterBox.classList.remove('playoff-roster-view');
 
-            // Resolve Bracket Matchups across all leagues
             ['CCS', 'CPL', 'CAS', 'CNL'].forEach(league => {
                 if (currentPlayoffRound === 1) {
                     playoffData[league].R2[0].t1 = playoffData[league].R1[0].winner;
@@ -2595,7 +3038,6 @@
             btn.disabled = false;
         });
 
-        // Tab Setup logic
         const setupModalTabs = (tabClass, contentClass) => {
             const tabs = document.querySelectorAll(tabClass);
             tabs.forEach(tab => {
@@ -2616,7 +3058,6 @@
         setupModalTabs('.sum-tab-btn', '.sum-tab-content');
         setupModalTabs('.rost-tab-btn', '.rost-tab-content');
 
-        // Modal Triggers
         document.getElementById('view-rosters-btn')?.addEventListener('click', () => document.getElementById('rosters-modal').style.display = 'flex');
         document.getElementById('bracket-rosters-btn')?.addEventListener('click', () => document.getElementById('rosters-modal').style.display = 'flex');
         document.getElementById('view-summary-btn').addEventListener('click', () => document.getElementById('summary-modal').style.display = 'flex');
