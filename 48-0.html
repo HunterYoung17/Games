@@ -213,7 +213,7 @@
             padding: 30px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
 
         .spin-panels-container {
@@ -386,6 +386,11 @@
             transition: all 0.2s ease;
         }
 
+        .player-card.franchise-card {
+            border-left: 4px solid var(--accent-gold);
+            background: linear-gradient(90deg, rgba(212,175,55,0.05) 0%, var(--bg-panel) 100%);
+        }
+
         .player-card:hover:not(.disabled-card) {
             background-color: var(--bg-hover);
             border-color: var(--accent-gold);
@@ -464,6 +469,8 @@
             margin-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .roster-tab {
@@ -489,6 +496,14 @@
             border-radius: 8px;
             border: 1px solid var(--border-color);
         }
+        
+        .division-column.franchise-col {
+            grid-column: 1 / -1;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
         .division-column h2 {
             text-align: center;
@@ -500,6 +515,10 @@
             font-size: 1rem;
             letter-spacing: 1px;
             text-transform: uppercase;
+        }
+        
+        .division-column.franchise-col h2 {
+            border: none; margin: 0; padding: 0; flex: 0.3; text-align: left;
         }
 
         .cap-tracker {
@@ -530,6 +549,13 @@
             min-height: 120px;
         }
 
+        .roster-slot.franchise-slot {
+            flex: 0.7;
+            margin: 0;
+            min-height: 70px;
+            flex-direction: row;
+        }
+
         .roster-slot::before {
             content: "+";
             display: flex;
@@ -542,14 +568,14 @@
             font-size: 1.2rem;
             margin-bottom: 5px;
         }
+        
+        .roster-slot.franchise-slot::before {
+            margin-bottom: 0; margin-right: 10px;
+        }
 
         .roster-slot:hover {
             border-color: var(--accent-gold);
             color: var(--accent-gold);
-        }
-
-        .roster-slot:hover::before {
-            border-color: var(--accent-gold);
         }
 
         .roster-slot.filled {
@@ -558,6 +584,10 @@
             cursor: default;
             padding: 12px;
             min-height: 125px;
+        }
+        
+        .roster-slot.franchise-slot.filled {
+            min-height: 70px;
         }
 
         .roster-slot.filled::before {
@@ -599,7 +629,7 @@
             margin-top: 2px;
         }
 
-        /* --- Live Simulation Matchup Screen --- */
+        /* --- Live Simulation Matchup Screen (Regular Season & Playoffs) --- */
         #simulation-screen {
             display: none;
             width: 100%;
@@ -626,6 +656,7 @@
             margin: 0;
             text-transform: uppercase;
             letter-spacing: 1px;
+            text-align: center;
         }
         
         .sim-title span {
@@ -657,11 +688,6 @@
             font-size: 0.9rem;
             transition: 0.2s;
             text-transform: uppercase;
-        }
-
-        .speed-btn:hover {
-            border-color: var(--text-main);
-            color: var(--text-main);
         }
 
         .speed-btn.active {
@@ -779,6 +805,30 @@
             margin-top: 5px;
         }
 
+        /* Playoff Roster View Adjustments (For all leagues/matches mode) */
+        .playoff-roster-view .sim-player-card {
+            width: 100px;
+            padding: 10px;
+            gap: 2px;
+        }
+        
+        .playoff-roster-view .sim-player-logo {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .playoff-roster-view .sim-player-name {
+            font-size: 0.8rem;
+        }
+        
+        .playoff-roster-view .sim-player-sub {
+            font-size: 0.55rem;
+        }
+        
+        .playoff-roster-view .sim-player-score {
+            font-size: 1.1rem;
+        }
+
         .vs-scoreboard {
             display: flex;
             flex-direction: column;
@@ -809,8 +859,142 @@
             text-align: center;
         }
 
-        /* --- End Rosters Modal with Tabs --- */
-        #rosters-modal {
+        /* --- Playoff Bracket Screen --- */
+        #playoff-bracket-screen {
+            display: none;
+            width: 100%;
+            max-width: 1400px;
+            padding: 20px;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .bracket-header {
+            text-align: center;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .bracket-header h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-gold);
+        }
+        
+        .playoff-tabs-container {
+            display: flex;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            margin-top: 15px;
+        }
+        
+        .playoff-tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 25px;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .playoff-tab-btn.active {
+            color: var(--accent-gold);
+            border-bottom-color: var(--accent-gold);
+        }
+
+        .bracket-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            gap: 20px;
+        }
+
+        .bracket-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            flex: 1;
+            gap: 20px;
+        }
+
+        .col-title {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .bracket-match {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bracket-team {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+            gap: 10px;
+            position: relative;
+        }
+        
+        .bracket-team.winner {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .bracket-team:last-child {
+            border-bottom: none;
+        }
+
+        .bracket-seed {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            width: 15px;
+        }
+
+        .bracket-logo {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .bracket-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .bracket-score {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--text-muted);
+        }
+        
+        .bracket-team.winner .bracket-score {
+            color: var(--accent-gold);
+        }
+
+        /* --- Modals --- */
+        .modal-overlay {
             display: none; 
             position: fixed; 
             top: 0; left: 0; 
@@ -822,7 +1006,7 @@
             padding: 20px;
         }
 
-        .rosters-content {
+        .modal-content {
             background: var(--bg-panel); 
             border: 1px solid var(--border-color); 
             border-radius: 12px; 
@@ -833,7 +1017,7 @@
             flex-direction: column;
         }
 
-        .rosters-modal-header {
+        .modal-header {
             padding: 20px 30px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
@@ -841,7 +1025,7 @@
             align-items: center;
         }
 
-        .rosters-modal-header h2 {
+        .modal-header h2 {
             margin: 0;
             color: var(--text-main);
             text-transform: uppercase;
@@ -854,7 +1038,7 @@
             padding: 0 30px;
         }
 
-        .modal-tab-btn {
+        .modal-tab-btn, .sum-tab-btn, .rost-tab-btn {
             background: none;
             border: none;
             padding: 15px 25px;
@@ -866,27 +1050,29 @@
             transition: 0.2s;
         }
 
-        .modal-tab-btn:hover {
-            color: var(--text-main);
-        }
-
-        .modal-tab-btn.active {
+        .modal-tab-btn.active, .sum-tab-btn.active, .rost-tab-btn.active {
             color: var(--accent-gold);
             border-bottom-color: var(--accent-gold);
         }
 
-        .modal-tab-content {
+        .modal-tab-content, .sum-tab-content, .rost-tab-content {
             display: none;
             padding: 30px;
             overflow-y: auto;
             flex: 1;
         }
 
-        .modal-tab-content.active {
+        .modal-tab-content.active, .rost-tab-content.active {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
             justify-content: center;
+        }
+        
+        .sum-tab-content.active {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .roster-group {
@@ -918,18 +1104,32 @@
             object-fit: contain;
         }
 
-        .roster-group-cards {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
+        .match-row {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            background: var(--bg-card); 
+            border: 1px solid var(--border-color);
+            padding: 15px 20px; 
+            border-radius: 8px; 
+            margin-bottom: 10px;
         }
+        .match-row.win { border-left: 5px solid var(--accent-gold); }
+        .match-row.loss { border-left: 5px solid #ff4d4d; }
+        
+        .match-score-badge { 
+            font-size: 1.5rem; 
+            font-weight: 900; 
+            letter-spacing: 2px; 
+        }
+        .match-score-badge.win { color: var(--accent-gold); }
+        .match-score-badge.loss { color: #ff4d4d; }
 
         @media (max-width: 1000px) {
             .game-container { flex-direction: column; }
             #roster-grid { grid-template-columns: 1fr; }
-            .matchup-arena { flex-direction: column; gap: 30px; }
-            .team-side { width: 100%; }
-            .sim-speed-controls { flex-wrap: wrap; }
+            .bracket-container { flex-direction: column; align-items: center; }
+            .bracket-col { width: 100%; max-width: 400px; }
         }
     </style>
 </head>
@@ -942,13 +1142,12 @@
         <div class="mode-cards">
             <div class="mode-card disabled" id="mode-classic" onclick="startGame('classic')">
                 <h2>Classic Mode</h2>
-                <p>Draft your 12-man organization with standard play-up rules. Build the best team possible without budget restrictions.</p>
+                <p>Draft your 12-man organization with standard play-up rules to conquer a 12-game season before hitting the Playoffs.</p>
                 <div id="status-classic" style="margin-top: 15px; font-size: 0.8rem; color: #ff4444;">Loading Data...</div>
             </div>
             <div class="mode-card disabled" id="mode-cap" onclick="startGame('cap')">
                 <h2>Cap Mode</h2>
-                <p>Draft your organization while staying under the dynamic MMR salary cap for each division. Hardcore teambuilding.</p>
-                <div id="status-cap" style="margin-top: 15px; font-size: 0.8rem; color: #ff4444;">Loading Data...</div>
+                <p>Draft your organization while staying under the dynamic MMR salary cap for each division before hitting the Playoffs.</p>
             </div>
         </div>
     </div>
@@ -962,7 +1161,7 @@
         <div class="header-right">
             <div class="header-stat">
                 <span class="header-stat-label">Picks</span>
-                <span class="header-stat-val"><span id="picks-tracker">0</span> / 12</span>
+                <span class="header-stat-val"><span id="picks-tracker">0</span> / 13</span>
             </div>
             <button id="reset-btn" class="nav-btn" style="padding: 10px 16px;">&#8634; Reset</button>
         </div>
@@ -1015,6 +1214,12 @@
             </div>
             
             <div id="roster-grid">
+                <!-- Franchise Slot -->
+                <div class="division-column franchise-col">
+                    <h2>Front Office</h2>
+                    <div class="roster-slot franchise-slot" id="franchise-slot" data-div="FRAN">Draft Franchise</div>
+                </div>
+
                 <div class="division-column" id="col-ccs">
                     <h2>CCS</h2>
                     <div class="cap-tracker" id="cap-ccs"></div>
@@ -1046,12 +1251,12 @@
             </div>
             
             <div id="sim-controls" style="display: none; margin-top: 30px; text-align: center; width: 100%;">
-                <button id="simulate-btn" class="primary-spin-btn" style="max-width: 400px; margin: 0 auto;">Enter Regular Season</button>
+                <button id="simulate-btn" class="primary-spin-btn" style="max-width: 400px; margin: 0 auto;">Enter Simulation</button>
             </div>
         </section>
     </div>
 
-    <!-- Live Simulation Matchup Screen -->
+    <!-- Regular Season & Playoff Simulation Matchup Screen -->
     <div id="simulation-screen">
         <div class="sim-header-container">
             <h1 class="sim-title" id="sim-current-league">CCS <span>Match 1 / 12</span></h1>
@@ -1066,81 +1271,122 @@
         </div>
 
         <div class="matchup-arena">
-            
-            <!-- User Team Side -->
             <div class="team-side left">
                 <div class="team-identity">
                     <img id="match-user-org-logo" src="" alt="Your Org" onerror="this.src='logos/ccs.png'">
                     <h3 id="match-user-title">YOUR TEAM</h3>
                 </div>
-                <div class="team-roster" id="match-user-roster">
-                    <!-- Cards injected here -->
-                </div>
+                <div class="team-roster" id="match-user-roster"></div>
                 <div class="team-ovr-badge" id="match-user-team-ovr">Team OVR: <span>0</span></div>
             </div>
 
-            <!-- Scoreboard -->
             <div class="vs-scoreboard">
                 <div class="bo5-text">Best of 5</div>
                 <div class="score-text" id="live-match-score">0 - 0</div>
             </div>
 
-            <!-- Opponent Team Side -->
             <div class="team-side right">
                 <div class="team-identity">
                     <img id="match-opp-logo" src="" alt="Opponent">
                     <h3 id="match-opp-title">TEAM</h3>
                 </div>
-                <div class="team-roster" id="match-opp-roster">
-                    <!-- Cards injected here -->
-                </div>
+                <div class="team-roster" id="match-opp-roster"></div>
                 <div class="team-ovr-badge" id="match-opp-team-ovr">Team OVR: <span>0</span></div>
             </div>
-
         </div>
 
         <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
-            <button id="view-rosters-btn" class="primary-spin-btn" style="display: none; max-width: 300px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color);">View League Rosters</button>
-            <button id="play-again-btn" class="primary-spin-btn" style="display: none; max-width: 300px;" onclick="location.reload()">Play Again</button>
+            <button id="view-rosters-btn" class="primary-spin-btn" style="display: none; max-width: 300px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color);">League Rosters</button>
+            <button id="view-summary-btn" class="primary-spin-btn" style="display: none; max-width: 300px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color);">Season Summary</button>
+            <button id="enter-playoffs-btn" class="primary-spin-btn" style="display: none; max-width: 300px; background: var(--accent-gold); color: #000;">Enter Playoffs</button>
         </div>
     </div>
 
-    <!-- Generated Opponent Rosters Modal (Tabbed) -->
-    <div id="rosters-modal">
-        <div class="rosters-content">
-            <div class="rosters-modal-header">
-                <h2>Generated Opponents</h2>
+    <!-- Playoff Bracket Screen -->
+    <div id="playoff-bracket-screen">
+        <div class="bracket-header">
+            <h1>League Playoffs</h1>
+            <p style="color: var(--text-muted); margin: 0; text-transform: uppercase; letter-spacing: 1px;">Single Elimination Bracket</p>
+            
+            <div class="playoff-tabs-container modal-tabs">
+                <button class="playoff-tab-btn active" data-tab="CCS">CCS</button>
+                <button class="playoff-tab-btn" data-tab="CPL">CPL</button>
+                <button class="playoff-tab-btn" data-tab="CAS">CAS</button>
+                <button class="playoff-tab-btn" data-tab="CNL">CNL</button>
+            </div>
+            
+            <div id="playoff-season-record" style="margin-top: 20px; font-weight: 800; font-size: 1.2rem;"></div>
+        </div>
+
+        <div class="bracket-container" id="bracket-ui-container">
+            <!-- Columns injected by JS -->
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-top: 20px; width: 100%; justify-content: center;">
+            <button id="bracket-advance-btn" class="primary-spin-btn" style="max-width: 400px;">Simulate Quarterfinals</button>
+            <button id="bracket-rosters-btn" class="primary-spin-btn" style="max-width: 250px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color);">League Rosters</button>
+            <button id="bracket-summary-btn" class="primary-spin-btn" style="max-width: 250px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color);">Season Summary</button>
+            <button id="bracket-play-again" class="primary-spin-btn" style="display:none; max-width: 300px;" onclick="location.reload()">Play Again</button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="rosters-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Opponent League Rosters</h2>
                 <button class="nav-btn" onclick="document.getElementById('rosters-modal').style.display='none'">Close</button>
             </div>
             
             <div class="modal-tabs">
-                <button class="modal-tab-btn active" data-tab="CCS">CCS</button>
-                <button class="modal-tab-btn" data-tab="CPL">CPL</button>
-                <button class="modal-tab-btn" data-tab="CAS">CAS</button>
-                <button class="modal-tab-btn" data-tab="CNL">CNL</button>
+                <button class="rost-tab-btn active" data-tab="CCS">CCS</button>
+                <button class="rost-tab-btn" data-tab="CPL">CPL</button>
+                <button class="rost-tab-btn" data-tab="CAS">CAS</button>
+                <button class="rost-tab-btn" data-tab="CNL">CNL</button>
             </div>
 
-            <div id="tab-content-CCS" class="modal-tab-content active"></div>
-            <div id="tab-content-CPL" class="modal-tab-content"></div>
-            <div id="tab-content-CAS" class="modal-tab-content"></div>
-            <div id="tab-content-CNL" class="modal-tab-content"></div>
+            <div id="rost-content-CCS" class="rost-tab-content active"></div>
+            <div id="rost-content-CPL" class="rost-tab-content"></div>
+            <div id="rost-content-CAS" class="rost-tab-content"></div>
+            <div id="rost-content-CNL" class="rost-tab-content"></div>
+        </div>
+    </div>
+    
+    <div id="summary-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Season Summary</h2>
+                <button class="nav-btn" onclick="document.getElementById('summary-modal').style.display='none'">Close</button>
+            </div>
+            
+            <div class="modal-tabs">
+                <button class="sum-tab-btn active" data-tab="CCS">CCS</button>
+                <button class="sum-tab-btn" data-tab="CPL">CPL</button>
+                <button class="sum-tab-btn" data-tab="CAS">CAS</button>
+                <button class="sum-tab-btn" data-tab="CNL">CNL</button>
+            </div>
 
+            <div id="sum-content-CCS" class="sum-tab-content active"></div>
+            <div id="sum-content-CPL" class="sum-tab-content"></div>
+            <div id="sum-content-CAS" class="sum-tab-content"></div>
+            <div id="sum-content-CNL" class="sum-tab-content"></div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-
     <script>
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQwfdhyVMYx0OgUX_OoTlY9MwdGWS_tCToFr85vJ_Zm_FTcGTzq0Gj2mg_jE4U5sRtbUAWIH5nNff79/pub?output=csv"; 
         
         let database = []; 
         let pickedPlayers = new Set();
+        let franchiseDrafted = false;
         let activePlayerToPlace = null; 
         let activePlayerLeagueLevel = null;
         let isSpinning = false;
         let currentGameMode = 'classic'; 
         let opponentSchedule = null;
         let userDraftedOrgName = null;
+        let userDraftedOrgSeason = null;
 
         let currentSpunSeason = null;
         let currentSpunOrg = null;
@@ -1150,6 +1396,9 @@
         let simSpeed = 1;
         let skipSim = false;
 
+        let matchResults = { CCS: [], CPL: [], CAS: [], CNL: [] };
+        let leagueRecords = { CCS: {w:0, l:0}, CPL: {w:0, l:0}, CAS: {w:0, l:0}, CNL: {w:0, l:0} };
+
         let leagueAverages = {
             CCS: { count: 0, totalOVR: 0, totalMMR: 0 },
             CPL: { count: 0, totalOVR: 0, totalMMR: 0 },
@@ -1158,29 +1407,35 @@
         };
         
         let leagueCaps = { CCS: 0, CPL: 0, CAS: 0, CNL: 0 };
+        let userDraftedTeams = { CCS: [], CPL: [], CAS: [], CNL: [] };
 
-        let userDraftedTeams = {
-            CCS: [],
-            CPL: [],
-            CAS: [],
-            CNL: []
-        };
-
-        const leagueLevels = { "CCS": 1, "CPL": 2, "CAS": 3, "CNL": 4 };
+        const leagueLevels = { "FRAN": 0, "CCS": 1, "CPL": 2, "CAS": 3, "CNL": 4 };
 
         const orgColors = {
-            "Shockwave": "#2080ff",
-            "Blasters": "#ff7700",
-            "Stars": "#a040ff",
-            "Pirates": "#8b5a2b",
-            "Howlers": "#ff66b2",
-            "Moose": "#d2b48c",
-            "Anglers": "#00ced1",
-            "Samurai": "#ff3333",
-            "Ninjas": "#718096",
-            "Flyers": "#2ecc71",
-            "Vipers": "#f1c40f",
-            "Zebras": "#ffffff"
+            "Shockwave": "#2080ff", "Blasters": "#ff7700", "Stars": "#a040ff",
+            "Pirates": "#8b5a2b", "Howlers": "#ff66b2", "Moose": "#d2b48c",
+            "Anglers": "#00ced1", "Samurai": "#ff3333", "Ninjas": "#718096",
+            "Flyers": "#2ecc71", "Vipers": "#f1c40f", "Zebras": "#ffffff"
+        };
+
+        const orgRivalries = {
+            "Anglers": "Samurai",
+            "Samurai": "Anglers",
+            "Flyers": "Ninjas",
+            "Ninjas": "Flyers",
+            "Vipers": "Zebras",
+            "Zebras": "Vipers",
+            "Shockwave": "Stars",
+            "Stars": "Shockwave",
+            "Howlers": "Moose",
+            "Moose": "Howlers",
+            "Blasters": "Pirates",
+            "Pirates": "Blasters"
+        };
+
+        const playoffDivisions = {
+            "American": ["Shockwave", "Blasters", "Stars", "Pirates", "Howlers", "Moose"],
+            "International": ["Anglers", "Samurai", "Flyers", "Ninjas", "Vipers", "Zebras"]
         };
 
         const orgTeams = {
@@ -1196,21 +1451,6 @@
             "Ninjas": ["Ninjas", "Shadows", "Prowlers", "Thieves", "Fishnobis"],
             "Vipers": ["Vipers", "Cobras", "Copperheads", "Anacondas"],
             "Zebras": ["Zebras", "Buffalo", "Elephants", "Rhinos"]
-        };
-
-        const orgRivalries = {
-            "Anglers": "Samurai",
-            "Samurai": "Anglers",
-            "Flyers": "Ninjas",
-            "Ninjas": "Flyers",
-            "Zebras": "Vipers",
-            "Vipers": "Zebras",
-            "Shockwave": "Stars",
-            "Stars": "Shockwave",
-            "Blasters": "Pirates",
-            "Pirates": "Blasters",
-            "Moose": "Howlers",
-            "Howlers": "Moose"
         };
 
         const spinBtn = document.getElementById('spin-btn');
@@ -1270,10 +1510,8 @@
                 });
 
                 document.getElementById('mode-classic').classList.remove('disabled');
-                document.getElementById('status-classic').style.display = 'none';
-                
                 document.getElementById('mode-cap').classList.remove('disabled');
-                document.getElementById('status-cap').style.display = 'none';
+                document.querySelectorAll('.mode-card div').forEach(el => el.style.display = 'none');
             }
         });
 
@@ -1287,14 +1525,17 @@
 
         function resetDraft() {
             pickedPlayers.clear();
+            franchiseDrafted = false;
             userDraftedTeams = { CCS: [], CPL: [], CAS: [], CNL: [] };
             userDraftedOrgName = null;
+            userDraftedOrgSeason = null;
             
             respinSeasonUsed = false;
             respinOrgUsed = false;
 
             rosterSlots.forEach(slot => {
-                slot.innerHTML = `Player`;
+                const isFranchise = slot.getAttribute('data-div') === 'FRAN';
+                slot.innerHTML = isFranchise ? `Draft Franchise` : `Player`;
                 slot.classList.remove('filled');
                 slot.style.borderColor = 'var(--border-color)';
                 slot.style.boxShadow = 'none';
@@ -1336,6 +1577,16 @@
 
         resetBtn.addEventListener('click', resetDraft);
 
+        function updatePicksTracker() {
+            let total = pickedPlayers.size + (franchiseDrafted ? 1 : 0);
+            picksTracker.innerText = total;
+            
+            if (total === 13) {
+                document.querySelector('.draft-section').style.display = 'none';
+                document.getElementById('sim-controls').style.display = 'block';
+            }
+        }
+
         function applyFilter(filterVal) {
             filterBtns.forEach(btn => {
                 btn.classList.toggle('active', btn.getAttribute('data-filter') === filterVal);
@@ -1351,17 +1602,16 @@
             });
         }
 
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                applyFilter(e.target.getAttribute('data-filter'));
-            });
-        });
+        filterBtns.forEach(btn => btn.addEventListener('click', (e) => applyFilter(e.target.getAttribute('data-filter'))));
 
         function getValidOpenSlots(playerLevel, playerMMR) {
-            const openSlots = document.querySelectorAll('.roster-slot:not(.filled)');
+            const isFranchiseCard = playerLevel === 0;
+            const openSlots = document.querySelectorAll(`.roster-slot:not(.filled)${isFranchiseCard ? '[data-div="FRAN"]' : ':not([data-div="FRAN"])'}`);
             let validCount = 0;
             
             openSlots.forEach(slot => {
+                if (isFranchiseCard) { validCount++; return; }
+                
                 const slotDiv = slot.getAttribute('data-div');
                 const slotLevel = leagueLevels[slotDiv];
                 
@@ -1370,32 +1620,17 @@
 
                 if (currentGameMode === 'cap') {
                     let currentDivMMR = 0;
-                    userDraftedTeams[slotDiv].forEach(p => {
-                        currentDivMMR += parseFloat(p['League mmr']) || 0;
-                    });
-                    
-                    if (currentDivMMR + playerMMR > leagueCaps[slotDiv]) {
-                        canFitCap = false;
-                    }
+                    userDraftedTeams[slotDiv].forEach(p => { currentDivMMR += parseFloat(p['League mmr']) || 0; });
+                    if (currentDivMMR + playerMMR > leagueCaps[slotDiv]) { canFitCap = false; }
                 }
 
-                if (canFitLeague && canFitCap) {
-                    validCount++;
-                }
+                if (canFitLeague && canFitCap) { validCount++; }
             });
             return validCount;
         }
 
         function triggerSpin(keepOrg = false, keepSeason = false) {
             if (isSpinning) return;
-
-            const ccsOpen = document.querySelectorAll('.roster-slot[data-div="CCS"]:not(.filled)').length > 0;
-            const cplOpen = document.querySelectorAll('.roster-slot[data-div="CPL"]:not(.filled)').length > 0;
-            const casOpen = document.querySelectorAll('.roster-slot[data-div="CAS"]:not(.filled)').length > 0;
-            const cnlOpen = document.querySelectorAll('.roster-slot[data-div="CNL"]:not(.filled)').length > 0;
-
-            if (!ccsOpen && !cplOpen && !casOpen && !cnlOpen) return;
-
             isSpinning = true;
             spinBtn.disabled = true;
             respinSeasonBtn.disabled = true;
@@ -1404,15 +1639,22 @@
             draftPoolContainer.innerHTML = '';
             filtersContainer.style.display = 'none';
             poolStatus.innerText = 'Spinning...';
-            
             orgLogo.classList.add('spinning');
             orgLogo.style.display = 'block';
 
+            const ccsOpen = document.querySelectorAll('.roster-slot[data-div="CCS"]:not(.filled)').length > 0;
+            const cplOpen = document.querySelectorAll('.roster-slot[data-div="CPL"]:not(.filled)').length > 0;
+            const casOpen = document.querySelectorAll('.roster-slot[data-div="CAS"]:not(.filled)').length > 0;
+            const cnlOpen = document.querySelectorAll('.roster-slot[data-div="CNL"]:not(.filled)').length > 0;
+
             let availableSeasons = ["s1", "s2", "s3", "s4", "s5"];
-            if (!ccsOpen && !cplOpen && !casOpen && cnlOpen) {
-                availableSeasons = ["s5"];
-            } else if (!ccsOpen && !cplOpen && casOpen) {
-                availableSeasons = ["s4", "s5"];
+            
+            if (!ccsOpen && !cplOpen) {
+                if (casOpen) {
+                    availableSeasons = ["s4", "s5"];
+                } else if (cnlOpen) {
+                    availableSeasons = ["s5"];
+                }
             }
 
             const expansionOrgs = ["Vipers", "Howlers", "Moose", "Zebras"];
@@ -1436,7 +1678,6 @@
                 badgeOrg.innerText = tempOrg;
                 badgeSeason.innerText = tempSeason.toUpperCase();
                 orgLogo.src = `logos/${tempOrg.toLowerCase().replace(/\s+/g, '')}.png`;
-                
                 spinCount++;
                 
                 if (spinCount >= maxSpins) {
@@ -1444,20 +1685,17 @@
                     
                     const finalSeason = keepSeason ? currentSpunSeason : getWeightedSeason(availableSeasons);
                     let finalOrgKeys = orgKeys;
-                    
                     if (!keepSeason && (finalSeason === "s1" || finalSeason === "s2")) {
                         finalOrgKeys = finalOrgKeys.filter(org => !expansionOrgs.includes(org));
                     }
-                    
                     const finalOrg = keepOrg ? currentSpunOrg : finalOrgKeys[Math.floor(Math.random() * finalOrgKeys.length)];
 
                     currentSpunSeason = finalSeason;
                     currentSpunOrg = finalOrg;
-                    if(!userDraftedOrgName) userDraftedOrgName = finalOrg;
+                    if(!userDraftedOrgName) userDraftedOrgName = finalOrg; 
 
                     badgeOrg.innerText = finalOrg;
                     badgeSeason.innerText = finalSeason.toUpperCase();
-                    
                     orgLogo.src = `logos/${finalOrg.toLowerCase().replace(/\s+/g, '')}.png`;
                     orgLogo.classList.remove('spinning');
 
@@ -1467,10 +1705,7 @@
                         const pLeague = (row.League || row.league || 'CNL').toUpperCase().trim();
                         const isS1CPL = (row.season.toLowerCase() === 's1' && pLeague === 'CPL');
                         
-                        return row.season.toLowerCase() === finalSeason && 
-                               belongsToOrg && 
-                               (gp >= 10 || isS1CPL) &&
-                               !pickedPlayers.has(row.playername);
+                        return row.season.toLowerCase() === finalSeason && belongsToOrg && (gp >= 10 || isS1CPL) && !pickedPlayers.has(row.playername);
                     });
 
                     availablePlayers.sort((a, b) => {
@@ -1483,7 +1718,6 @@
                     
                     isSpinning = false;
                     spinBtn.disabled = false;
-                    
                     respinSeasonBtn.disabled = respinSeasonUsed;
                     respinOrgBtn.disabled = respinOrgUsed;
                 }
@@ -1491,23 +1725,49 @@
         }
 
         spinBtn.addEventListener('click', () => triggerSpin(false, false));
-        respinSeasonBtn.addEventListener('click', () => {
-            respinSeasonUsed = true;
-            triggerSpin(true, false);
-        }); 
-        respinOrgBtn.addEventListener('click', () => {
-            respinOrgUsed = true;
-            triggerSpin(false, true);
-        }); 
+        respinSeasonBtn.addEventListener('click', () => { respinSeasonUsed = true; triggerSpin(true, false); }); 
+        respinOrgBtn.addEventListener('click', () => { respinOrgUsed = true; triggerSpin(false, true); }); 
 
         function displayDraftPool(players) {
             draftPoolContainer.innerHTML = '';
             applyFilter('ALL'); 
 
-            if (players.length === 0) {
-                poolStatus.innerText = '0 players available';
-                draftPoolContainer.innerHTML = '<p style="color: #ff4444; padding: 20px;">No available players left for this team/season. Spin again!</p>';
-                return;
+            if (!franchiseDrafted) {
+                const franCard = document.createElement('div');
+                franCard.className = 'player-card franchise-card';
+                franCard.setAttribute('data-league', 'FRAN');
+                
+                const franColor = orgColors[currentSpunOrg] || '#D4AF37';
+                
+                let franData = database.find(r => r.orgname === currentSpunOrg && r.season.toLowerCase() === currentSpunSeason && (r.League || '').toUpperCase().trim() === 'FRAN');
+                let ownerName = franData ? franData.playername : `${currentSpunOrg} Owner`;
+                let franOVR = franData ? parseInt(franData.OVR || franData.Overall || 60, 10) : 'ORG';
+
+                franCard.innerHTML = `
+                    <div class="player-info">
+                        <div class="player-name">${ownerName}</div>
+                        <div class="player-sub">FRONT OFFICE &bull; ${currentSpunOrg}</div>
+                    </div>
+                    <div class="player-stats-row">
+                        <div class="stat-block">
+                            <span class="stat-val ovr-val" style="color: ${franColor}; font-size: 1.1rem; font-style: italic;">${franOVR}</span>
+                            <span class="stat-label">OVR</span>
+                        </div>
+                    </div>
+                `;
+                
+                const fObj = {
+                    playername: ownerName,
+                    orgname: currentSpunOrg,
+                    season: currentSpunSeason,
+                    League: 'FRAN',
+                    'League mmr': 0,
+                    OVR: franOVR,
+                    isFranchise: true
+                };
+                
+                franCard.onclick = () => selectPlayer(fObj, 'FRAN', franCard);
+                draftPoolContainer.appendChild(franCard);
             }
 
             poolStatus.innerText = `${players.length} player${players.length > 1 ? 's' : ''} available`;
@@ -1543,12 +1803,8 @@
                 `;
                 
                 const openValidSlots = getValidOpenSlots(pLevel, pMMR);
-                
-                if (openValidSlots === 0) {
-                    card.classList.add('disabled-card');
-                } else {
-                    card.onclick = () => selectPlayer(p, cleanLeagueString, card);
-                }
+                if (openValidSlots === 0) { card.classList.add('disabled-card'); } 
+                else { card.onclick = () => selectPlayer(p, cleanLeagueString, card); }
                 
                 draftPoolContainer.appendChild(card);
             });
@@ -1562,10 +1818,8 @@
             
             cardElement.style.borderColor = 'var(--accent-gold)';
             cardElement.style.backgroundColor = 'var(--bg-hover)';
-            
             activePlayerToPlace = playerObj;
             activePlayerLeagueLevel = leagueLevels[playerLeague] || 4; 
-            
             poolStatus.innerText = `Select a valid slot on the roster for ${playerObj.playername}`;
         }
 
@@ -1577,38 +1831,69 @@
                 const slotDiv = slot.getAttribute('data-div');
                 const slotLevel = leagueLevels[slotDiv];
 
-                if (slotLevel > activePlayerLeagueLevel) {
-                    alert(`Invalid placement! A player from ${Object.keys(leagueLevels).find(k => leagueLevels[k] === activePlayerLeagueLevel)} cannot play down in ${slotDiv}.`);
+                // Check Franchise Assignment
+                if (activePlayerToPlace.isFranchise) {
+                    if (slotDiv !== 'FRAN') { alert(`The Franchise can only be placed in the Front Office slot.`); return; }
+                    
+                    franchiseDrafted = true;
+                    userDraftedOrgName = activePlayerToPlace.orgname;
+                    userDraftedOrgSeason = activePlayerToPlace.season;
+                    
+                    const color = orgColors[userDraftedOrgName] || '#D4AF37';
+                    const logoSafe = userDraftedOrgName.toLowerCase().replace(/\s+/g, '');
+                    
+                    slot.classList.add('filled');
+                    slot.style.borderColor = color;
+                    slot.style.boxShadow = `0 0 12px ${color}40`;
+                    
+                    slot.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%;">
+                            <img src="logos/${logoSafe}.png" style="width: 36px; height: 36px; object-fit: contain;" onerror="this.src='logos/ccs.png'">
+                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                                <div style="font-weight: 800; font-size: 1.1rem; color: var(--text-main); line-height: 1;">${activePlayerToPlace.playername}</div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">${userDraftedOrgSeason.toUpperCase()} Front Office &bull; ${activePlayerToPlace.OVR} OVR</div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    activePlayerToPlace = null;
+                    activePlayerLeagueLevel = null;
+                    draftPoolContainer.innerHTML = '';
+                    poolStatus.innerText = 'Franchise locked! Spin again to continue.';
+                    filtersContainer.style.display = 'none';
+                    updatePicksTracker();
                     return;
+                }
+
+                // Regular Player Checks
+                if (slotDiv === 'FRAN') {
+                    alert(`Players cannot be placed in the Front Office Franchise slot.`); return;
+                }
+
+                if (slotLevel > activePlayerLeagueLevel) {
+                    alert(`Invalid placement! Cannot play down.`); return;
                 }
 
                 if (currentGameMode === 'cap') {
                     let currentDivMMR = 0;
-                    userDraftedTeams[slotDiv].forEach(p => {
-                        currentDivMMR += parseFloat(p['League mmr']) || 0;
-                    });
-                    
+                    userDraftedTeams[slotDiv].forEach(p => { currentDivMMR += parseFloat(p['League mmr']) || 0; });
                     const newPlayerMMR = parseFloat(activePlayerToPlace['League mmr']) || 0;
-                    
                     if (currentDivMMR + newPlayerMMR > leagueCaps[slotDiv]) {
-                        alert(`Cap Exceeded! Placing ${activePlayerToPlace.playername} (${newPlayerMMR} MMR) pushes you over the ${slotDiv} Salary Cap of ${leagueCaps[slotDiv]}.`);
-                        return;
+                        alert(`Cap Exceeded for ${slotDiv}!`); return;
                     }
                 }
 
                 const p = activePlayerToPlace;
                 const orgColor = orgColors[currentSpunOrg] || '#D4AF37';
                 const ovrVal = parseInt(p.OVR || p.Overall || p.ovr || p.overall || 60, 10);
+                const logoFileName = currentSpunOrg.toLowerCase().replace(/\s+/g, '') + '.png';
 
                 slot.classList.add('filled');
                 slot.style.borderColor = orgColor;
-                slot.style.boxShadow = `0 0 12px ${orgColor}40`;
                 
-                const logoFileName = currentSpunOrg.toLowerCase().replace(/\s+/g, '') + '.png';
-
                 slot.innerHTML = `
                     <div class="slot-card-content">
-                        <img src="logos/${logoFileName}" class="slot-card-logo" alt="${currentSpunOrg}" onerror="this.src='logos/ccs.png'">
+                        <img src="logos/${logoFileName}" class="slot-card-logo" onerror="this.src='logos/ccs.png'">
                         <div class="slot-card-name">${p.playername}</div>
                         <div class="slot-card-sub">&#128085; ${currentSpunOrg} &bull; ${p.season.toUpperCase()}</div>
                         <div class="slot-card-score" style="color: ${orgColor}">${ovrVal}</div>
@@ -1617,14 +1902,10 @@
                 
                 pickedPlayers.add(p.playername);
                 userDraftedTeams[slotDiv].push(p);
-                picksTracker.innerText = pickedPlayers.size;
-
+                
                 if (currentGameMode === 'cap') {
                     let updatedMMR = 0;
-                    userDraftedTeams[slotDiv].forEach(p => {
-                        updatedMMR += parseFloat(p['League mmr']) || 0;
-                    });
-                    
+                    userDraftedTeams[slotDiv].forEach(p => { updatedMMR += parseFloat(p['League mmr']) || 0; });
                     let remaining = leagueCaps[slotDiv] - Math.round(updatedMMR);
                     document.getElementById(`cap-${slotDiv.toLowerCase()}`).innerHTML = `Cap: ${Math.round(updatedMMR)} / ${leagueCaps[slotDiv]} <span style="color: var(--accent-gold);">(${remaining} left)</span>`;
                 }
@@ -1632,46 +1913,75 @@
                 activePlayerToPlace = null;
                 activePlayerLeagueLevel = null;
                 draftPoolContainer.innerHTML = '';
-                
                 poolStatus.innerText = 'Player locked! Spin again to continue.';
                 filtersContainer.style.display = 'none';
-                
                 respinSeasonBtn.disabled = true;
                 respinOrgBtn.disabled = true;
 
-                if (pickedPlayers.size === 12) {
-                    document.querySelector('.draft-section').style.display = 'none';
-                    document.getElementById('sim-controls').style.display = 'block';
-                }
+                updatePicksTracker();
             });
         });
 
         // ----------------------------------------------------------------------
-        // LIVE SIMULATION & OPPONENT GENERATOR ENGINE
+        // REGULAR SEASON SIMULATION ENGINE
         // ----------------------------------------------------------------------
-
-        document.querySelectorAll('.speed-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                
-                const speedVal = e.target.getAttribute('data-speed');
-                if(speedVal === 'max') {
-                    skipSim = true;
-                    simSpeed = 100;
-                } else {
-                    skipSim = false;
-                    simSpeed = parseInt(speedVal);
-                }
-            });
+        document.getElementById('simulate-btn').addEventListener('click', () => {
+            document.getElementById('main-game').style.display = 'none';
+            document.getElementById('simulation-screen').style.display = 'flex';
+            startRegularSeason();
         });
 
         async function simDelay(ms) {
-            if(skipSim) {
-                await new Promise(r => setTimeout(r, 0));
-                return;
-            }
+            if(skipSim) { await new Promise(r => setTimeout(r, 0)); return; }
             await new Promise(r => setTimeout(r, ms / simSpeed));
+        }
+
+        // New League-Specific OVR Calculators
+        function calculateOrgLeagueOVR(orgName, league) {
+            let seasonsToTry = ["s5", "s4", "s3", "s2", "s1"];
+            const expansions = ["Vipers", "Howlers", "Moose", "Zebras"];
+            if (expansions.includes(orgName)) { seasonsToTry = seasonsToTry.filter(s => s !== "s1" && s !== "s2"); }
+            
+            for (let s of seasonsToTry) {
+                let players = database.filter(row => {
+                    const belongsToOrg = orgTeams[orgName].includes(row.orgname);
+                    const gp = parseInt(row.GP || row.gp || row['Games Played'] || row['Games'] || 0, 10);
+                    const pLeague = (row.League || row.league || 'CNL').toUpperCase().trim();
+                    const isS1CPL = (s === 's1' && pLeague === 'CPL');
+                    return belongsToOrg && row.season.toLowerCase() === s && pLeague === league && (gp >= 5 || isS1CPL);
+                }).sort((a,b) => parseInt(b.OVR || 60, 10) - parseInt(a.OVR || 60, 10)).slice(0,3);
+                
+                if (players.length >= 3) {
+                    let sum = 0;
+                    players.slice(0,3).forEach(p => sum += parseInt(p.OVR || 60, 10));
+                    return { ovr: Math.round(sum / 3), players: players.slice(0,3) };
+                }
+            }
+            
+            // Fallback if full team not found
+            let fallback = database.filter(row => {
+                const belongsToOrg = orgTeams[orgName].includes(row.orgname);
+                const pLeague = (row.League || row.league || 'CNL').toUpperCase().trim();
+                return belongsToOrg && pLeague === league;
+            }).sort((a,b) => parseInt(b.OVR || 60, 10) - parseInt(a.OVR || 60, 10)).slice(0,3);
+            
+            let sum = 0;
+            fallback.forEach(p => sum += parseInt(p.OVR || 60, 10));
+            return { ovr: fallback.length > 0 ? Math.round(sum / fallback.length) : 75, players: fallback };
+        }
+
+        function calculateUserOrgLeagueOVR(league) {
+            let totalOvr = 0;
+            let allPlayers = [];
+            const slotLevel = leagueLevels[league];
+            userDraftedTeams[league].forEach(p => {
+                const pLeague = (p.League || p.league || 'CNL').toUpperCase().trim();
+                const pLevel = leagueLevels[pLeague] || 4; 
+                const multiplier = 1 - ((pLevel - slotLevel) * 0.25); 
+                totalOvr += (parseInt(p.OVR || 60, 10) * multiplier);
+                allPlayers.push(p);
+            });
+            return { ovr: Math.round(totalOvr / 3), players: allPlayers };
         }
 
         function generateOpponentSchedule(userOrg) {
@@ -1769,54 +2079,93 @@
             `;
         }
 
-        document.getElementById('simulate-btn').addEventListener('click', async () => {
-            document.getElementById('main-game').style.display = 'none';
-            document.getElementById('simulation-screen').style.display = 'flex';
-            
+        function populateSummaryScreen() {
+            ['CCS', 'CPL', 'CAS', 'CNL'].forEach(div => {
+                const container = document.getElementById(`sum-content-${div}`);
+                const color = orgColors[userDraftedOrgName] || '#D4AF37';
+                
+                let rosterHTML = `<div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 20px;">`;
+                userDraftedTeams[div].forEach(p => {
+                    const orgMatch = Object.keys(orgTeams).find(o => orgTeams[o].includes(p.orgname));
+                    rosterHTML += generatePlayerCardHTML(p, orgMatch || userDraftedOrgName, p.orgname);
+                });
+                rosterHTML += `</div>`;
+                
+                let recordHTML = `
+                    <div style="text-align: center; margin-bottom: 20px; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 15px 0;">
+                        <h3 style="margin: 0; font-size: 1.8rem; color: var(--text-main); text-transform: uppercase;">
+                            ${div} Record: <span style="color: ${color};">${leagueRecords[div].w} - ${leagueRecords[div].l}</span>
+                        </h3>
+                    </div>
+                `;
+                
+                let historyHTML = `<div style="display: flex; flex-direction: column;">`;
+                matchResults[div].forEach(m => {
+                    const isWin = m.uWins === 3;
+                    historyHTML += `
+                        <div class="match-row ${isWin ? 'win' : 'loss'}">
+                            <div style="display: flex; align-items: center; gap: 20px;">
+                                <div style="color: var(--text-muted); font-weight: 800; font-size: 0.9rem; width: 65px;">WK ${m.week}${m.isRivalry ? '*' : ''}</div>
+                                <img src="logos/${m.oppLogo}.png" style="width: 45px; height: 45px; object-fit: contain;" onerror="this.src='logos/${m.oppFallback}.png'; this.onerror=function(){this.src='logos/ccs.png';};">
+                                <div style="display: flex; flex-direction: column;">
+                                    <span style="font-weight: 800; font-size: 1.2rem; color: var(--text-main);">${m.oppTeam}</span>
+                                    <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Team OVR: ${m.oppOvr}</span>
+                                </div>
+                            </div>
+                            <div class="match-score-badge ${isWin ? 'win' : 'loss'}">${m.uWins} - ${m.oWins}</div>
+                        </div>
+                    `;
+                });
+                historyHTML += `</div>`;
+                
+                container.innerHTML = rosterHTML + recordHTML + historyHTML;
+            });
+        }
+        
+        function populateRostersScreen() {
+            ['CCS', 'CPL', 'CAS', 'CNL'].forEach(div => {
+                const container = document.getElementById(`rost-content-${div}`);
+                let html = '';
+                let seenOrgs = new Set();
+                
+                opponentSchedule[div].forEach(opp => {
+                    if (!seenOrgs.has(opp.org)) {
+                        seenOrgs.add(opp.org);
+                        
+                        const safeOppLogo = opp.teamName.toLowerCase().replace(/\s+/g, '');
+                        const fallbackOppLogo = opp.org.toLowerCase().replace(/\s+/g, '');
+
+                        html += `
+                        <div class="roster-group" style="max-width: 460px;">
+                            <div class="roster-group-title">
+                                <img src="logos/${safeOppLogo}.png" onerror="this.src='logos/${fallbackOppLogo}.png'; this.onerror=function(){this.src='logos/ccs.png';};">
+                                ${opp.teamName} <span style="color: var(--accent-gold); font-size: 0.9rem; margin-left: 5px;">(${opp.teamOVR} OVR)</span>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                        `;
+                        opp.players.forEach(p => {
+                            html += generatePlayerCardHTML(p, opp.org, opp.teamName);
+                        });
+                        html += `</div></div>`;
+                    }
+                });
+                
+                container.innerHTML = html;
+            });
+        }
+
+        async function startRegularSeason() {
             opponentSchedule = generateOpponentSchedule(userDraftedOrgName || "Anglers");
 
             let userStats = { CCS: {ovr:0}, CPL: {ovr:0}, CAS: {ovr:0}, CNL: {ovr:0} };
             ['CCS', 'CPL', 'CAS', 'CNL'].forEach(div => {
-                const slotLevel = leagueLevels[div];
-                userDraftedTeams[div].forEach(p => {
-                    const pLeague = (p.League || p.league || 'CNL').toUpperCase().trim();
-                    const pLevel = leagueLevels[pLeague] || 4; 
-                    const multiplier = 1 - ((pLevel - slotLevel) * 0.25); 
-                    
-                    const pOVR = parseInt(p.OVR || p.Overall || p.ovr || p.overall || 60, 10);
-                    userStats[div].ovr += pOVR * multiplier;
-                });
-                userStats[div].ovr = userStats[div].ovr / 3;
+                let teamData = calculateUserOrgLeagueOVR(div);
+                userStats[div].ovr = teamData.ovr;
             });
 
-            // Set user team identity header branding
             const userOrgSafeLogo = (userDraftedOrgName || "Anglers").toLowerCase().replace(/\s+/g, '');
             document.getElementById('match-user-org-logo').src = `logos/${userOrgSafeLogo}.png`;
             document.getElementById('match-user-title').innerText = `${userDraftedOrgName || "YOUR TEAM"} TEAM`;
-
-            ['CCS', 'CPL', 'CAS', 'CNL'].forEach(div => {
-                const tabContent = document.getElementById(`tab-content-${div}`);
-                let tabHTML = '';
-                opponentSchedule[div].forEach(opp => {
-                    const safeLogo = opp.teamName.toLowerCase().replace(/\s+/g, '');
-                    const fallbackLogo = opp.org.toLowerCase().replace(/\s+/g, '');
-
-                    tabHTML += `
-                        <div class="roster-group" style="border-top: 4px solid ${orgColors[opp.org] || '#555'}">
-                            <div class="roster-group-title">
-                                <img src="logos/${safeLogo}.png" onerror="this.src='logos/${fallbackLogo}.png'; this.onerror=function(){this.src='logos/ccs.png';};">
-                                ${opp.season.toUpperCase()} ${opp.teamName}
-                            </div>
-                            <div class="roster-group-cards">
-                                ${generatePlayerCardHTML(opp.players[0], opp.org, opp.teamName)}
-                                ${generatePlayerCardHTML(opp.players[1], opp.org, opp.teamName)}
-                                ${generatePlayerCardHTML(opp.players[2], opp.org, opp.teamName)}
-                            </div>
-                        </div>
-                    `;
-                });
-                tabContent.innerHTML = tabHTML;
-            });
 
             const titleEl = document.getElementById('sim-current-league');
             const recordEl = document.getElementById('live-total-record');
@@ -1836,10 +2185,10 @@
                 let uTeamHTML = '';
                 userDraftedTeams[div].forEach(p => {
                     const orgMatch = Object.keys(orgTeams).find(o => orgTeams[o].includes(p.orgname));
-                    uTeamHTML += generatePlayerCardHTML(p, orgMatch || "Anglers", p.orgname);
+                    uTeamHTML += generatePlayerCardHTML(p, orgMatch || userDraftedOrgName || "Anglers", p.orgname);
                 });
                 userRosterBox.innerHTML = uTeamHTML;
-                userTeamOvrBadge.innerText = Math.round(userStats[div].ovr);
+                userTeamOvrBadge.innerText = userStats[div].ovr;
 
                 for (let week = 0; week < 12; week++) {
                     let opp = opponentSchedule[div][week];
@@ -1865,23 +2214,17 @@
                     let winProb = 50 + ((uOVR - opp.teamOVR) * 3);
                     winProb = Math.max(5, Math.min(95, winProb));
 
-                    let uWins = 0;
-                    let oWins = 0;
+                    let uWins = 0, oWins = 0;
                     scoreBox.innerText = `0 - 0`;
                     scoreBox.style.color = "var(--text-main)";
                     scoreBox.style.borderColor = "var(--border-color)";
 
                     await simDelay(600);
 
-                    // Bo5 Loop
                     while(uWins < 3 && oWins < 3) {
                         await simDelay(350); 
                         let roll = Math.random() * 100;
-                        if(roll <= winProb) {
-                            uWins++;
-                        } else {
-                            oWins++;
-                        }
+                        if(roll <= winProb) { uWins++; } else { oWins++; }
                         scoreBox.innerText = `${uWins} - ${oWins}`;
                     }
 
@@ -1889,47 +2232,395 @@
                         scoreBox.style.color = "var(--accent-gold)";
                         scoreBox.style.borderColor = "var(--accent-gold)";
                         globalWins++;
+                        leagueRecords[div].w++;
                     } else {
                         scoreBox.style.color = "#ff4d4d";
                         scoreBox.style.borderColor = "#ff4d4d";
                         globalLosses++;
+                        leagueRecords[div].l++;
                     }
                     recordEl.innerText = `${globalWins} - ${globalLosses}`;
+                    
+                    matchResults[div].push({
+                        week: week + 1,
+                        oppOrg: opp.org,
+                        oppTeam: opp.teamName,
+                        oppLogo: safeOppLogo,
+                        oppFallback: fallbackOppLogo,
+                        oppOvr: opp.teamOVR,
+                        uWins: uWins,
+                        oWins: oWins,
+                        isRivalry: week === 11
+                    });
 
                     await simDelay(800); 
                 }
             }
 
-            // End of season
+            populateSummaryScreen();
+            populateRostersScreen();
+
             titleEl.innerHTML = `SEASON COMPLETE`;
             document.querySelector('.sim-speed-controls').style.display = 'none';
             document.getElementById('view-rosters-btn').style.display = 'block';
-            document.getElementById('play-again-btn').style.display = 'block';
+            document.getElementById('view-summary-btn').style.display = 'block';
+            document.getElementById('enter-playoffs-btn').style.display = 'block';
             
             if(globalWins === 48) {
                 recordEl.style.color = '#00E59B';
                 recordEl.innerText = "48 - 0 (FLAWLESS)";
             }
-        });
+        }
 
-        // Tab Switching Logic in Modal
-        const tabs = document.querySelectorAll('.modal-tab-btn');
-        const contents = document.querySelectorAll('.modal-tab-content');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                contents.forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.speed-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
                 
-                tab.classList.add('active');
-                document.getElementById(`tab-content-${tab.getAttribute('data-tab')}`).classList.add('active');
+                const speedVal = e.target.getAttribute('data-speed');
+                if(speedVal === 'max') {
+                    skipSim = true;
+                    simSpeed = 100;
+                } else {
+                    skipSim = false;
+                    simSpeed = parseInt(speedVal);
+                }
             });
         });
 
-        document.getElementById('view-rosters-btn').addEventListener('click', () => {
-            document.getElementById('rosters-modal').style.display = 'flex';
+        // ----------------------------------------------------------------------
+        // PLAYOFF BRACKET ENGINE (4 LEAGUES)
+        // ----------------------------------------------------------------------
+        let playoffData = {};
+        let currentPlayoffRound = 1;
+        let activePlayoffTab = 'CCS';
+
+        document.getElementById('enter-playoffs-btn').addEventListener('click', () => {
+            document.getElementById('simulation-screen').style.display = 'none';
+            document.getElementById('playoff-bracket-screen').style.display = 'flex';
+            initPlayoffs();
         });
 
+        function initPlayoffs() {
+            const userOrg = userDraftedOrgName || "Anglers";
+            const isUserAmerican = playoffDivisions.American.includes(userOrg);
+            
+            playoffData = { CCS: {}, CPL: {}, CAS: {}, CNL: {} };
+            
+            ['CCS', 'CPL', 'CAS', 'CNL'].forEach(league => {
+                let amTeams = isUserAmerican ? playoffDivisions.American.filter(o => o !== userOrg) : [...playoffDivisions.American];
+                amTeams.sort(() => Math.random() - 0.5);
+                let finalAm = isUserAmerican ? [userOrg, amTeams[0], amTeams[1], amTeams[2]] : [amTeams[0], amTeams[1], amTeams[2], amTeams[3]];
+                finalAm.sort(() => Math.random() - 0.5);
+
+                let intTeams = !isUserAmerican ? playoffDivisions.International.filter(o => o !== userOrg) : [...playoffDivisions.International];
+                intTeams.sort(() => Math.random() - 0.5);
+                let finalInt = !isUserAmerican ? [userOrg, intTeams[0], intTeams[1], intTeams[2]] : [intTeams[0], intTeams[1], intTeams[2], intTeams[3]];
+                finalInt.sort(() => Math.random() - 0.5);
+
+                const buildTeamObj = (org, seed) => {
+                    const teamData = org === userOrg ? calculateUserOrgLeagueOVR(league) : calculateOrgLeagueOVR(org, league);
+                    return {
+                        org: org,
+                        seed: seed,
+                        isUser: org === userOrg,
+                        ovr: teamData.ovr,
+                        players: teamData.players,
+                        logo: org.toLowerCase().replace(/\s+/g, '')
+                    };
+                };
+
+                playoffData[league] = {
+                    R1: [
+                        { id: 'm1', t1: buildTeamObj(finalAm[0], 1), t2: buildTeamObj(finalAm[3], 4), winner: null, score: '0-0', bo: 5 },
+                        { id: 'm2', t1: buildTeamObj(finalAm[1], 2), t2: buildTeamObj(finalAm[2], 3), winner: null, score: '0-0', bo: 5 },
+                        { id: 'm3', t1: buildTeamObj(finalInt[0], 1), t2: buildTeamObj(finalInt[3], 4), winner: null, score: '0-0', bo: 5 },
+                        { id: 'm4', t1: buildTeamObj(finalInt[1], 2), t2: buildTeamObj(finalInt[2], 3), winner: null, score: '0-0', bo: 5 }
+                    ],
+                    R2: [
+                        { id: 'm5', t1: null, t2: null, winner: null, score: '0-0', bo: 7 },
+                        { id: 'm6', t1: null, t2: null, winner: null, score: '0-0', bo: 7 }
+                    ],
+                    R3: [
+                        { id: 'm7', t1: null, t2: null, winner: null, score: '0-0', bo: 7 }
+                    ]
+                };
+            });
+
+            // Set up playoff tab listeners
+            document.querySelectorAll('.playoff-tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.playoff-tab-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    activePlayoffTab = e.target.getAttribute('data-tab');
+                    renderBracket();
+                });
+            });
+
+            renderBracket();
+
+            const totalW = leagueRecords.CCS.w + leagueRecords.CPL.w + leagueRecords.CAS.w + leagueRecords.CNL.w;
+            const totalL = leagueRecords.CCS.l + leagueRecords.CPL.l + leagueRecords.CAS.l + leagueRecords.CNL.l;
+            const recEl = document.getElementById('playoff-season-record');
+            if (recEl) {
+                if (totalW === 48 && totalL === 0) {
+                    recEl.style.color = '#00E59B';
+                    recEl.innerText = "Regular Season: 48-0 (FLAWLESS)";
+                } else {
+                    recEl.style.color = 'var(--accent-gold)';
+                    recEl.innerText = `Regular Season: ${totalW} - ${totalL}`;
+                }
+            }
+        }
+
+        function renderBracket() {
+            const container = document.getElementById('bracket-ui-container');
+            const pData = playoffData[activePlayoffTab];
+            
+            container.innerHTML = `
+                <div class="bracket-col">
+                    <div class="col-title">Competitive Series<br>(Americas)</div>
+                    ${renderMatch(pData.R1[0])}
+                    ${renderMatch(pData.R1[1])}
+                </div>
+                <div class="bracket-col" style="justify-content: space-around;">
+                    <div class="col-title">Pennant Series<br>(Americas)</div>
+                    ${renderMatch(pData.R2[0])}
+                </div>
+                <div class="bracket-col" style="justify-content: center;">
+                    <div class="col-title" style="color: var(--accent-gold); font-size: 1rem;">Clutch Series<br>Championship</div>
+                    ${renderMatch(pData.R3[0])}
+                </div>
+                <div class="bracket-col" style="justify-content: space-around;">
+                    <div class="col-title">Pennant Series<br>(International)</div>
+                    ${renderMatch(pData.R2[1])}
+                </div>
+                <div class="bracket-col">
+                    <div class="col-title">Competitive Series<br>(International)</div>
+                    ${renderMatch(pData.R1[2])}
+                    ${renderMatch(pData.R1[3])}
+                </div>
+            `;
+        }
+
+        function renderMatch(m) {
+            if (!m.t1 || !m.t2) {
+                return `
+                    <div class="bracket-match" style="opacity: 0.5;">
+                        <div class="bracket-team"><span class="bracket-seed">-</span> <div class="bracket-name">TBD</div> <span class="bracket-score">-</span></div>
+                        <div class="bracket-team"><span class="bracket-seed">-</span> <div class="bracket-name">TBD</div> <span class="bracket-score">-</span></div>
+                    </div>
+                `;
+            }
+            
+            const scores = m.score.split('-');
+            const s1 = parseInt(scores[0]);
+            const s2 = parseInt(scores[1]);
+
+            return `
+                <div class="bracket-match" style="border-color: ${m.t1.isUser || m.t2.isUser ? 'var(--accent-gold)' : 'var(--border-color)'}; box-shadow: ${m.t1.isUser || m.t2.isUser ? '0 0 10px rgba(212,175,55,0.2)' : 'none'};">
+                    <div class="bracket-team ${m.winner && m.winner.org === m.t1.org ? 'winner' : ''}">
+                        <span class="bracket-seed">${m.t1.seed}</span> 
+                        <img class="bracket-logo" src="logos/${m.t1.logo}.png" onerror="this.src='logos/ccs.png'"> 
+                        <div class="bracket-name" style="color: ${m.t1.isUser ? 'var(--accent-gold)' : 'var(--text-main)'}">${m.t1.org}</div> 
+                        <span class="bracket-score">${m.winner ? s1 : '-'}</span>
+                    </div>
+                    <div class="bracket-team ${m.winner && m.winner.org === m.t2.org ? 'winner' : ''}">
+                        <span class="bracket-seed">${m.t2.seed}</span> 
+                        <img class="bracket-logo" src="logos/${m.t2.logo}.png" onerror="this.src='logos/ccs.png'"> 
+                        <div class="bracket-name" style="color: ${m.t2.isUser ? 'var(--accent-gold)' : 'var(--text-main)'}">${m.t2.org}</div> 
+                        <span class="bracket-score">${m.winner ? s2 : '-'}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.getElementById('bracket-advance-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('bracket-advance-btn');
+            btn.disabled = true;
+            
+            // Collect all matches to simulate across all 4 leagues
+            let allMatchesToSim = [];
+            ['CCS', 'CPL', 'CAS', 'CNL'].forEach(league => {
+                let matches = currentPlayoffRound === 1 ? playoffData[league].R1 : currentPlayoffRound === 2 ? playoffData[league].R2 : playoffData[league].R3;
+                matches.forEach(m => {
+                    if (m.t1 && m.t2) allMatchesToSim.push({ league: league, match: m });
+                });
+            });
+            
+            // --- Transition to Simulation Screen ---
+            document.getElementById('playoff-bracket-screen').style.display = 'none';
+            document.getElementById('simulation-screen').style.display = 'flex';
+            document.getElementById('view-summary-btn').style.display = 'none';
+            document.getElementById('view-rosters-btn').style.display = 'none';
+            document.getElementById('enter-playoffs-btn').style.display = 'none';
+            
+            const titleEl = document.getElementById('sim-current-league');
+            const scoreBox = document.getElementById('live-match-score');
+            const recordEl = document.getElementById('live-total-record');
+            recordEl.style.display = 'none'; 
+            document.querySelector('.sim-speed-controls').style.display = 'flex';
+
+            const userRosterBox = document.getElementById('match-user-roster');
+            const oppRosterBox = document.getElementById('match-opp-roster');
+            
+            userRosterBox.classList.add('playoff-roster-view');
+            oppRosterBox.classList.add('playoff-roster-view');
+
+            const userTeamOvrBadge = document.querySelector('#match-user-team-ovr span');
+            const oppTeamOvrBadge = document.querySelector('#match-opp-team-ovr span');
+            const userLogo = document.getElementById('match-user-org-logo');
+            const oppLogo = document.getElementById('match-opp-logo');
+            const userTitle = document.getElementById('match-user-title');
+            const oppTitle = document.getElementById('match-opp-title');
+
+            const roundNames = { 1: "Quarterfinals", 2: "Semifinals", 3: "Championship" };
+            const currentRoundName = roundNames[currentPlayoffRound];
+
+            for (let i = 0; i < allMatchesToSim.length; i++) {
+                let mObj = allMatchesToSim[i];
+                let m = mObj.match;
+                let activeLeague = mObj.league;
+
+                titleEl.innerHTML = `${activeLeague} ${currentRoundName} <br><span style="font-size: 1.2rem;">MATCH ${i + 1} / ${allMatchesToSim.length}</span>`;
+                document.querySelector('.bo5-text').innerText = `BEST OF ${m.bo}`;
+                
+                // Populate Team 1 (Left)
+                userLogo.src = `logos/${m.t1.logo}.png`;
+                userLogo.onerror = function() { this.src='logos/ccs.png'; };
+                userTitle.innerText = `${m.t1.seed} ${m.t1.org}`;
+                userTeamOvrBadge.innerText = m.t1.ovr;
+                
+                let t1HTML = '';
+                m.t1.players.forEach(p => { 
+                    const orgMatch = Object.keys(orgTeams).find(o => orgTeams[o].includes(p.orgname)) || m.t1.org;
+                    t1HTML += generatePlayerCardHTML(p, orgMatch, p.orgname); 
+                });
+                userRosterBox.innerHTML = t1HTML;
+
+                // Populate Team 2 (Right)
+                oppLogo.src = `logos/${m.t2.logo}.png`;
+                oppLogo.onerror = function() { this.src='logos/ccs.png'; };
+                oppTitle.innerText = `${m.t2.seed} ${m.t2.org}`;
+                oppTeamOvrBadge.innerText = m.t2.ovr;
+                
+                let t2HTML = '';
+                m.t2.players.forEach(p => { 
+                    const orgMatch = Object.keys(orgTeams).find(o => orgTeams[o].includes(p.orgname)) || m.t2.org;
+                    t2HTML += generatePlayerCardHTML(p, orgMatch, p.orgname); 
+                });
+                oppRosterBox.innerHTML = t2HTML;
+
+                let winProb = 50 + ((m.t1.ovr - m.t2.ovr) * 3);
+                winProb = Math.max(10, Math.min(90, winProb));
+                
+                let w1 = 0, w2 = 0;
+                let needed = m.bo === 5 ? 3 : 4;
+                
+                scoreBox.innerText = `0 - 0`;
+                scoreBox.style.color = "var(--text-main)";
+                scoreBox.style.borderColor = "var(--border-color)";
+
+                await simDelay(800);
+                
+                while (w1 < needed && w2 < needed) {
+                    await simDelay(300);
+                    if (Math.random() * 100 <= winProb) w1++; else w2++;
+                    scoreBox.innerText = `${w1} - ${w2}`;
+                }
+                
+                m.score = `${w1}-${w2}`;
+                m.winner = w1 === needed ? m.t1 : m.t2;
+
+                if(w1 === needed) {
+                    scoreBox.style.color = "var(--accent-gold)";
+                    scoreBox.style.borderColor = "var(--accent-gold)";
+                } else {
+                    scoreBox.style.color = "#ff4d4d";
+                    scoreBox.style.borderColor = "#ff4d4d";
+                }
+
+                await simDelay(1000);
+            }
+
+            // --- Return to Bracket Screen ---
+            document.getElementById('simulation-screen').style.display = 'none';
+            document.getElementById('playoff-bracket-screen').style.display = 'flex';
+            recordEl.style.display = 'block'; 
+            userRosterBox.classList.remove('playoff-roster-view');
+            oppRosterBox.classList.remove('playoff-roster-view');
+
+            // Resolve Bracket Matchups across all leagues
+            ['CCS', 'CPL', 'CAS', 'CNL'].forEach(league => {
+                if (currentPlayoffRound === 1) {
+                    playoffData[league].R2[0].t1 = playoffData[league].R1[0].winner;
+                    playoffData[league].R2[0].t2 = playoffData[league].R1[1].winner;
+                    playoffData[league].R2[1].t1 = playoffData[league].R1[2].winner;
+                    playoffData[league].R2[1].t2 = playoffData[league].R1[3].winner;
+                } else if (currentPlayoffRound === 2) {
+                    playoffData[league].R3[0].t1 = playoffData[league].R2[0].winner;
+                    playoffData[league].R3[0].t2 = playoffData[league].R2[1].winner;
+                }
+            });
+
+            if (currentPlayoffRound === 1) {
+                btn.innerText = "Simulate Semifinals";
+            } else if (currentPlayoffRound === 2) {
+                btn.innerText = "Simulate Championship";
+            } else {
+                btn.style.display = 'none';
+                document.getElementById('bracket-play-again').style.display = 'block';
+                
+                let champsCount = 0;
+                ['CCS', 'CPL', 'CAS', 'CNL'].forEach(league => {
+                    if(playoffData[league].R3[0].winner && playoffData[league].R3[0].winner.isUser) champsCount++;
+                });
+
+                const totalW = leagueRecords.CCS.w + leagueRecords.CPL.w + leagueRecords.CAS.w + leagueRecords.CNL.w;
+                
+                if(champsCount === 4 && totalW === 48) {
+                    document.querySelector('.bracket-header p').innerHTML = `<span style="color: #00E59B; font-weight: 900; font-size: 1.4rem;">PERFECT 48-0 & 4x SWEEP CHAMPIONS!</span>`;
+                } else if (champsCount > 0) {
+                    document.querySelector('.bracket-header p').innerHTML = `<span style="color: #00E59B; font-weight: 900; font-size: 1.4rem;">${champsCount}x LEAGUE CHAMPIONS!</span>`;
+                } else {
+                    document.querySelector('.bracket-header p').innerHTML = `<span style="color: #ff4d4d; font-weight: 900; font-size: 1.4rem;">ELIMINATED ACROSS ALL LEAGUES</span>`;
+                }
+                
+                const recEl = document.getElementById('playoff-season-record');
+                if(recEl) recEl.style.display = 'none';
+            }
+
+            currentPlayoffRound++;
+            renderBracket();
+            btn.disabled = false;
+        });
+
+        // Tab Setup logic
+        const setupModalTabs = (tabClass, contentClass) => {
+            const tabs = document.querySelectorAll(tabClass);
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const parentModal = tab.closest('.modal-content');
+                    parentModal.querySelectorAll(tabClass).forEach(t => t.classList.remove('active'));
+                    parentModal.querySelectorAll(contentClass).forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    let contentId = tabClass === '.modal-tab-btn' ? `tab-content-${tab.getAttribute('data-tab')}` : 
+                                    tabClass === '.sum-tab-btn' ? `sum-content-${tab.getAttribute('data-tab')}` :
+                                    `rost-content-${tab.getAttribute('data-tab')}`;
+                    document.getElementById(contentId).classList.add('active');
+                });
+            });
+        };
+        setupModalTabs('.modal-tab-btn', '.modal-tab-content');
+        setupModalTabs('.sum-tab-btn', '.sum-tab-content');
+        setupModalTabs('.rost-tab-btn', '.rost-tab-content');
+
+        // Modal Triggers
+        document.getElementById('view-rosters-btn')?.addEventListener('click', () => document.getElementById('rosters-modal').style.display = 'flex');
+        document.getElementById('bracket-rosters-btn')?.addEventListener('click', () => document.getElementById('rosters-modal').style.display = 'flex');
+        document.getElementById('view-summary-btn').addEventListener('click', () => document.getElementById('summary-modal').style.display = 'flex');
+        document.getElementById('bracket-summary-btn').addEventListener('click', () => document.getElementById('summary-modal').style.display = 'flex');
     </script>
 </body>
 </html>
